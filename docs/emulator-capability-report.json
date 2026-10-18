@@ -1,0 +1,45 @@
+{
+  "measuredAt": "2026-10-17T11:06:27.182Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "romHash": "9ee0f350378e05af8a89c2b7c2b6c6a6da3ec0794ece686d2e7f93beb1e32728",
+  "profile": "ejs4.2.3:genesis-plus-gx2.0.2:legacy:single-thread:v1",
+  "scope": "Two runtimes on one browser; no synchronized input trace, exact frame step, cross-device or rollback verification.",
+  "results": [
+    {
+      "frame": 219,
+      "pausedFrame": 219,
+      "advancedFrame": 231,
+      "pausedCounterStable": true,
+      "pausedSerializationStable": true,
+      "resumeAdvanced": true,
+      "immediateRestoreEqual": false,
+      "stateBytes": 1036312,
+      "baselineHash": "ed8b643663104e50c54fe3122de7f9d657ea0e364d3cab720a5dd9ff0744aeba",
+      "repeatHash": "ed8b643663104e50c54fe3122de7f9d657ea0e364d3cab720a5dd9ff0744aeba",
+      "restoredHash": "4043c97a857eb865955695d59453700e01420eba41c457f3e305481a44824ad7",
+      "supportsStates": true,
+      "exportedFrameControls": [
+        "_get_current_frame_count"
+      ],
+      "exactFrameStepVerified": false
+    },
+    {
+      "frame": 151,
+      "pausedFrame": 151,
+      "advancedFrame": 162,
+      "pausedCounterStable": true,
+      "pausedSerializationStable": true,
+      "resumeAdvanced": true,
+      "immediateRestoreEqual": false,
+      "stateBytes": 1036312,
+      "baselineHash": "1101b0d2534f6866833b698d2ec33bf33d57c3099ce95c9cdad2aeef95026e9a",
+      "repeatHash": "1101b0d2534f6866833b698d2ec33bf33d57c3099ce95c9cdad2aeef95026e9a",
+      "restoredHash": "c96a5a834a6e6602029bb1ca6253d756dc11210f3e20e1b188c8448a2f19c852",
+      "supportsStates": true,
+      "exportedFrameControls": [
+        "_get_current_frame_count"
+      ],
+      "exactFrameStepVerified": false
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "measuredAt": "2026-10-17T13:04:13.956Z",
+  "scope": "Two independent clients in the Codex in-app browser on one computer; host-authoritative WebRTC streaming",
+  "frontend": "http://127.0.0.1:3100",
+  "roomService": "http://127.0.0.1:4001",
+  "demo": {
+    "name": "Quickdraw Duel",
+    "romSHA256": "4a08dcf8c1633e8b97158471e547acdf9d248f9d725c62464a5f43d9554e8374",
+    "license": "CC0-1.0"
+  },
+  "runtimeSHA256": "806cbb652dbe911b6398f650e4214956c5d3867b4afd2eb99cc51d5554ea75a9",
+  "checks": {
+    "privateRoomMatchingAndReadiness": true,
+    "hostControllerPort1Response": true,
+    "guestControllerPort2Response": true,
+    "receivedVideo": true,
+    "receivedAudioTrack": true,
+    "guestPlaybackReadyState": 4,
+    "guestDecodedVideoSize": {
+      "width": 562,
+      "height": 442
+    },
+    "remotePlayer2CompletedWin": true,
+    "sharedKeyboardPlayer1CompletedWin": true,
+    "sharedKeyboardPlayer2CompletedWin": true,
+    "sharedKeyboardRematchFromPlayer2": true,
+    "endGameClearsBothReadyStates": true,
+    "waitingRoomReconnect": true,
+    "onlineAssetsExcludedFromOfflinePackage": true
+  },
+  "automatedChecks": 64,
+  "productionBuild": "passed: webpack",
+  "lint": "passed",
+  "typecheck": "passed",
+  "serverBuild": "passed",
+  "notVerified": [
+    "Physical gamepads",
+    "Different browser engines",
+    "Separate devices or internet networks",
+    "Commercial game compatibility",
+    "In-game state recovery",
+    "Deterministic two-core synchronization",
+    "Rollback"
+  ]
+}

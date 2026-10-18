@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Generated offline package (recreated after production build)
+/public/sw.js
+/public/offline-build.json
+
+/.multiplayer-build/
+!.env.example
+/public/sync-lab/runtime/
+
+/public/online-player/bridge.js

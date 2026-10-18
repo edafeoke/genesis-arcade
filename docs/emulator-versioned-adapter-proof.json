@@ -1,0 +1,633 @@
+{
+  "measuredAt": "2026-10-17T12:26:07.879Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "romHash": "c12ec5da51b65a46838808ce9a0beadc98ea8308a028197789c9354ef6134a3d",
+  "profile": "ejs4.2.3:genesis-plus-gx2.0.2:legacy:single-thread:v1",
+  "adapterMode": true,
+  "adapterProvenance": {
+    "sourceArchiveSHA256": "790d33b43cb9652fffdf74a3cd505cb72c7c62d39899fd5a12a618c2077c4e64",
+    "instrumentedArchiveSHA256": "5f5992684612d264e206d1436e58db1a82b9e6332cab90544e07d0b911729c87",
+    "playerScriptSHA256": {
+      "bridge.js": "0d2768187e1767eaf9bb466d5c72cd9326e8991aefd954d22361810c9096dc89",
+      "capability-lab.js": "4712623db5da705cbf01dc7adde6debff8955314cbb8dd4d0bb0c023847aed92"
+    },
+    "patch": "Expose an Asyncify-aware paused main-loop callback as genesisLabTick, suppressing automatic resume during the operation; no WASM changes.",
+    "scope": "Experimental frontend iteration, not certified emulated-frame stepping.",
+    "adapterProofSHA256": "5713bc002b9e0b92d72ead03fb4224dd0f653912b43dcc302038be17f39e9ef8"
+  },
+  "scope": "Two runtimes on one browser; no synchronized input trace, exact frame step, cross-device or rollback verification.",
+  "results": [
+    {
+      "frame": 320,
+      "pausedFrame": 320,
+      "advancedFrame": 327,
+      "pausedCounterStable": true,
+      "pausedSerializationStable": true,
+      "resumeAdvanced": true,
+      "immediateRestoreEqual": false,
+      "stateBytes": 1036312,
+      "baselineHash": "71a75c29acb89ec13d9f78cdc555864d90575e9db1c306ba5db52ff45737a229",
+      "repeatHash": "71a75c29acb89ec13d9f78cdc555864d90575e9db1c306ba5db52ff45737a229",
+      "restoredHash": "b8d88ae83c3644d470620deebec19f5e22f92d57216f476b2de24f1aed582b00",
+      "supportsStates": true,
+      "exportedFrameControls": [
+        "_get_current_frame_count"
+      ],
+      "exactFrameStepVerified": false,
+      "adapter": {
+        "frontendTicks": 16,
+        "counterDelta": 16,
+        "stateChanged": true,
+        "checkpointHash": "4be86cf5c8b19a893ba7f427165b84acfd019ac80ba078247902cbb356bc5287",
+        "traceHash": "4e3f0833c46649d05c9216b68da796e92b491bc7e0d2da2cf31a70e18a59757c",
+        "restoreHashes": [
+          "4be86cf5c8b19a893ba7f427165b84acfd019ac80ba078247902cbb356bc5287"
+        ],
+        "restoreMatchIndex": 0,
+        "replayHash": "b83f3d79f64084cf7269b10b0ff775804809820c3ddf0e2fb52d1cfbc8ff2ef2",
+        "replayEqual": false,
+        "differingBytes": 5,
+        "differingOffsets": [
+          144180,
+          144181,
+          144244,
+          144248,
+          144258
+        ],
+        "gameFrameBefore": {
+          "value": 318,
+          "offset": 32,
+          "swapped": true
+        },
+        "traceGameFrames": [
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332,
+          333,
+          334
+        ],
+        "replayGameFrames": [
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332,
+          333,
+          334
+        ],
+        "traceStepHashes": [
+          "f9cc25104f791ace7259585785aa7d77c2a89cac3c98cf046ed2d41c40fde58b",
+          "808dca37e1a1ad9e28e4d4c56c886f1faa4b17f4b50e4f271d16071d9878f3de",
+          "38b5e92bb61c9518943c99c3e8ca234521252c02eb190ff1aa007b13819e5341",
+          "5d187bd9bd0876d77c369ffc16468b680c0647a4b0318c2638524e393ed0dda0",
+          "dedfa27d5ad0d4c55825a8f39337b4a678da70dd00501735ccf845b0a0215c19",
+          "e0b27cc1c9be60364e84784a725bc61b61ca1afb27bb2f7f4dfc7154134fadad",
+          "c595886cc95e75cfb1b2e2e904e9d407f1befa7b10574e12d27f609418f24916",
+          "868aaddc0678017910cec27319fb19595c9fe41c29f7d8d0b94128666bcf4dad",
+          "f3e39c595e7b0b8bb125e4def722dfbbc5e17a6dbbf27f8d32abc933543341a0",
+          "f594f0ff90c617b1134973d68a27dd45fb47bcc14c73f3873b90fbe30de80b2d",
+          "084d47b8243e400006164cd91ba79e6df0b3cdfda73c3c055ad67847b20edefd",
+          "6894baa20bb6c02459cbe08db1fa1b346a3a02856387e2bfbecbbb92a03d1c03",
+          "45dcea7c06d6e82dc6f12d757add18670bbae138230e19965d73d58cdb852cfc",
+          "de6c34d5784a57fce1db63c560a0759569d2214e9f74445302a7746bc368b140",
+          "18f5ec5ffdb3a7fa3cd0adecffe94caedb0084c2951a387c499b05efae834cc6",
+          "4e3f0833c46649d05c9216b68da796e92b491bc7e0d2da2cf31a70e18a59757c"
+        ],
+        "replayStepHashes": [
+          "690458ceb9fbbf581a84db46e9a0d1fb45afc91199ae5a2aa0840a0b35f0e97b",
+          "655d1b8805d6642b9cd9fae8f1f64177680bfca898084d4478334ff6b85124a7",
+          "00653a2334644a2528acf1e4116007aecdb6f3ecdd92740e140efa1e985f4f8a",
+          "77ebb72e100417609a5291086a62048b472a55dde1a87b14327d96ffda78eac2",
+          "275dc10520ca7ad2915c3093495f1a9b995d19742ff508dd4da825f185c14076",
+          "c2f8c4932df00ac1b9e0db613d4a00f0d14013109f126487bf4e46a27420ae94",
+          "205a180720c9a44a86358d9ed281ccd64207c1ae3b6c1eb5cf3a54df84e39c4f",
+          "c18984e7d34f7849c9624cc4d3d66c044aa144865c13c73dcc3014f96dd5d43f",
+          "e217511f131084a424d6a8fc0d7b35c06ad3ed199c8f7f5cefcaf2f58f8878f2",
+          "eb62a0f284cded6d2e6f59b02d8cc295374152f6b17f1ae8c2609f0f7882a0bb",
+          "f76c76a5ae31073d11ae3233a7b91b0fa16288eae3789d276c0cef6f19759a5e",
+          "2776b258d1e623a7292fad438c95dd447cb672faf9536f677bbcb86f6481dded",
+          "20f3852710e3032905c3bc54cb6dbf9b2796ed9b1cc77e7bef333327949608fe",
+          "13a3efba9b4130e2f008203a18109453ab970eff154d5aea294779bff0005944",
+          "7ef76dc1b997621ac9349018ce2255f2fbd51638871993cc5c2b6dd44f78e955",
+          "b83f3d79f64084cf7269b10b0ff775804809820c3ddf0e2fb52d1cfbc8ff2ef2"
+        ],
+        "firstDivergentStep": 1,
+        "cpuLayoutEvidence": {
+          "checkpoint": {
+            "d0": 640,
+            "sp": 16777212,
+            "pc": 808,
+            "cycles": 52,
+            "candidates": [
+              {
+                "address": 4105916,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  52,
+                  -936,
+                  896040
+                ]
+              },
+              {
+                "address": 28068316,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  360
+                ]
+              },
+              {
+                "address": 29104636,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  864
+                ]
+              }
+            ]
+          },
+          "restored": {
+            "d0": 640,
+            "sp": 16777212,
+            "pc": 808,
+            "cycles": 52,
+            "candidates": [
+              {
+                "address": 4105916,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  52,
+                  784000,
+                  896040
+                ]
+              },
+              {
+                "address": 28068316,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  360
+                ]
+              },
+              {
+                "address": 29104636,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  360
+                ]
+              }
+            ]
+          }
+        },
+        "refreshSidecarReplay": {
+          "available": true,
+          "experiment": "fixture-refresh-sidecar-v1",
+          "capturedRefreshCycles": -936,
+          "ordinaryRestoredRefreshCycles": 784000,
+          "correctedHash": "4e3f0833c46649d05c9216b68da796e92b491bc7e0d2da2cf31a70e18a59757c",
+          "fullStateReplayEqual": true,
+          "allStepsEqual": true,
+          "firstDivergentStep": null,
+          "stepHashes": [
+            "f9cc25104f791ace7259585785aa7d77c2a89cac3c98cf046ed2d41c40fde58b",
+            "808dca37e1a1ad9e28e4d4c56c886f1faa4b17f4b50e4f271d16071d9878f3de",
+            "38b5e92bb61c9518943c99c3e8ca234521252c02eb190ff1aa007b13819e5341",
+            "5d187bd9bd0876d77c369ffc16468b680c0647a4b0318c2638524e393ed0dda0",
+            "dedfa27d5ad0d4c55825a8f39337b4a678da70dd00501735ccf845b0a0215c19",
+            "e0b27cc1c9be60364e84784a725bc61b61ca1afb27bb2f7f4dfc7154134fadad",
+            "c595886cc95e75cfb1b2e2e904e9d407f1befa7b10574e12d27f609418f24916",
+            "868aaddc0678017910cec27319fb19595c9fe41c29f7d8d0b94128666bcf4dad",
+            "f3e39c595e7b0b8bb125e4def722dfbbc5e17a6dbbf27f8d32abc933543341a0",
+            "f594f0ff90c617b1134973d68a27dd45fb47bcc14c73f3873b90fbe30de80b2d",
+            "084d47b8243e400006164cd91ba79e6df0b3cdfda73c3c055ad67847b20edefd",
+            "6894baa20bb6c02459cbe08db1fa1b346a3a02856387e2bfbecbbb92a03d1c03",
+            "45dcea7c06d6e82dc6f12d757add18670bbae138230e19965d73d58cdb852cfc",
+            "de6c34d5784a57fce1db63c560a0759569d2214e9f74445302a7746bc368b140",
+            "18f5ec5ffdb3a7fa3cd0adecffe94caedb0084c2951a387c499b05efae834cc6",
+            "4e3f0833c46649d05c9216b68da796e92b491bc7e0d2da2cf31a70e18a59757c"
+          ],
+          "gameFrames": [
+            319,
+            320,
+            321,
+            322,
+            323,
+            324,
+            325,
+            326,
+            327,
+            328,
+            329,
+            330,
+            331,
+            332,
+            333,
+            334
+          ]
+        },
+        "fieldHypotheses": [
+          "68000 D0",
+          "68000 PC",
+          "68000 SR",
+          "68000 cycles"
+        ],
+        "fieldLayoutVerified": false,
+        "fixtureSingleFrameSteps": true,
+        "exactEmulatedFrameVerified": false
+      },
+      "adapterBoundary": {
+        "scope": "local diagnostic adapter replay; no network transport",
+        "identity": {
+          "adapter": "genesis-adapter-v1",
+          "rom": "c12ec5da51b65a46838808ce9a0beadc98ea8308a028197789c9354ef6134a3d",
+          "core": "5f5992684612d264e206d1436e58db1a82b9e6332cab90544e07d0b911729c87",
+          "runtime": "93c96d7880e5ce4577281f4fc0e64b23c9c98b4fe48f0cfd32d36561d7e5f132",
+          "settings": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "frames": 16,
+        "checkpointChecksum": "3bcd5c23e5ac7c5213bf8e6d88d8f44166bcd4388ae52aa3c07b26e44c0fc6b5",
+        "allStepsEqual": true,
+        "firstDivergentStep": null,
+        "stepChecksums": [
+          "f822adbf4b355f9dc4310110bec86d0aa4da2cbd330c3b4de29531d33529da39",
+          "2bb2d8c558cef1f5248f5417c2dd4940c1ce2438f765476d9be838b8ebbecbeb",
+          "4080722289da692b913af88c7f9287e06537f3016468c7492658ecd80ed760c7",
+          "344e41538fc59cc378a986f39394d43255b7d9113864a9dead65c810c8f5e9d5",
+          "942468237688a7ee829974d453019fcac919773ca1358314a5314d153c10d496",
+          "8c809a404940505e8b25d2dd203cdbe7a284867fe93e431b79ac9c46f0663618",
+          "c0413d36e355e6b26ebf8998077026779ea984de600e5ac16be1f931ceb0ed77",
+          "ce048f4c2c77b2884acc48037663e2268f8f253845268716cfc9f75f89f49fd4",
+          "46447d8979c9affe0178157481b7dc2b5f94f06967f8d03e2d4efba0d910756e",
+          "d55b885e839da5b88fcd68e97f9eefa89ce17c48c6b452441c09bb03f232591b",
+          "d16f0a0a6c05fbbcf54ce76d2c1649415e0f3ed7666cb2d2082cacc6e7529338",
+          "771de3305633036bf822eb683ff915586d3772f12d737760a52a9944b7640adc",
+          "ee1c0d3d72683ee4c7815dfa4d3331c38c0d96b8ae3ff7e58a7fdc230dd3dfff",
+          "323355c33c78e2c904437707b54b48b9e0049235af546f35e7fa4d67b26b6c1b",
+          "de85d9b8751364d2191fd0077477a4736a522bda8c94fe1e95588d347c70b107",
+          "3b3dd50e829a7bfd515bd4b7e2364ee1e01c5743562cae988f236193c02a0e8a"
+        ],
+        "replayChecksums": [
+          "f822adbf4b355f9dc4310110bec86d0aa4da2cbd330c3b4de29531d33529da39",
+          "2bb2d8c558cef1f5248f5417c2dd4940c1ce2438f765476d9be838b8ebbecbeb",
+          "4080722289da692b913af88c7f9287e06537f3016468c7492658ecd80ed760c7",
+          "344e41538fc59cc378a986f39394d43255b7d9113864a9dead65c810c8f5e9d5",
+          "942468237688a7ee829974d453019fcac919773ca1358314a5314d153c10d496",
+          "8c809a404940505e8b25d2dd203cdbe7a284867fe93e431b79ac9c46f0663618",
+          "c0413d36e355e6b26ebf8998077026779ea984de600e5ac16be1f931ceb0ed77",
+          "ce048f4c2c77b2884acc48037663e2268f8f253845268716cfc9f75f89f49fd4",
+          "46447d8979c9affe0178157481b7dc2b5f94f06967f8d03e2d4efba0d910756e",
+          "d55b885e839da5b88fcd68e97f9eefa89ce17c48c6b452441c09bb03f232591b",
+          "d16f0a0a6c05fbbcf54ce76d2c1649415e0f3ed7666cb2d2082cacc6e7529338",
+          "771de3305633036bf822eb683ff915586d3772f12d737760a52a9944b7640adc",
+          "ee1c0d3d72683ee4c7815dfa4d3331c38c0d96b8ae3ff7e58a7fdc230dd3dfff",
+          "323355c33c78e2c904437707b54b48b9e0049235af546f35e7fa4d67b26b6c1b",
+          "de85d9b8751364d2191fd0077477a4736a522bda8c94fe1e95588d347c70b107",
+          "3b3dd50e829a7bfd515bd4b7e2364ee1e01c5743562cae988f236193c02a0e8a"
+        ]
+      }
+    },
+    {
+      "frame": 314,
+      "pausedFrame": 314,
+      "advancedFrame": 321,
+      "pausedCounterStable": true,
+      "pausedSerializationStable": true,
+      "resumeAdvanced": true,
+      "immediateRestoreEqual": false,
+      "stateBytes": 1036312,
+      "baselineHash": "f4a7f1f1e3166e2c811a94df44da89bd126149db77c78952a1bc6d120dd3383d",
+      "repeatHash": "f4a7f1f1e3166e2c811a94df44da89bd126149db77c78952a1bc6d120dd3383d",
+      "restoredHash": "a220e23967445e61d9bd049a3a43b5fbf953a5632a52b9adefc11ebdca6c1916",
+      "supportsStates": true,
+      "exportedFrameControls": [
+        "_get_current_frame_count"
+      ],
+      "exactFrameStepVerified": false,
+      "adapter": {
+        "frontendTicks": 16,
+        "counterDelta": 16,
+        "stateChanged": true,
+        "checkpointHash": "cd1895bd4e907e50396abff51cdc3dca93c81c12fe1d19a16f991a714294aa6e",
+        "traceHash": "f59b63bd4549af5a125027cd845031ab23ddf991df5dfb381d913dfd4908c81c",
+        "restoreHashes": [
+          "cd1895bd4e907e50396abff51cdc3dca93c81c12fe1d19a16f991a714294aa6e"
+        ],
+        "restoreMatchIndex": 0,
+        "replayHash": "d40d04a31b1b603e829024ec6b110b0d3e065141af9de993731699c9d84aed34",
+        "replayEqual": false,
+        "differingBytes": 5,
+        "differingOffsets": [
+          144180,
+          144181,
+          144244,
+          144248,
+          144258
+        ],
+        "gameFrameBefore": {
+          "value": 312,
+          "offset": 32,
+          "swapped": true
+        },
+        "traceGameFrames": [
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328
+        ],
+        "replayGameFrames": [
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328
+        ],
+        "traceStepHashes": [
+          "17eb4f56b3cf79a7c142b200be68448be2291b00b8d4e478ed9183e89c3b0507",
+          "62f9a39582fc9ff547e949a297543cfc30bd7496057810d4156863dfaea1350b",
+          "d086d29218d8b4168c4401945ee7d7c70757ff1b12a2d9eadbc1f86fe11dd44f",
+          "3e1880304c55d4ad8c5dbad5c7826257021b9e5a8a22625b37787bde5d34020b",
+          "5f02a8fffd0ff3cd68fcd5e39ecf232690b64dec6086cf147e3fc41d260bd1c3",
+          "4a2df1b6f45d322d4fcae2834584a1ae2bd31a9538263cf8543e30e5e98d3793",
+          "e14f9c324f78141529c469073160f744f28e4fe084cfce6f3cf896e1a732f047",
+          "6c88d838c8ddb87e5ca04fabf29c181fe0f432d0d05450cfbdceac3f9dcf51c8",
+          "8d0d8c659081397a0d2dfb5e3a8eda3e1e74b3023a42643b7185d910ef8ecc46",
+          "b6fca4c18ced7c05639f5b90505b3a38f67083dfb53810b4cdec94cbcc0103be",
+          "b0f3b590eb2482b6feba65d1024e1bc5d0d6ee28ccb6c57894e645e2777366eb",
+          "1bd5e06ab1e3ef4f763b10ae8ef2b766aaae6b5296a59a12aed65151c7dd7e7e",
+          "6bc0dbf4b8bfebe7cd9549eb8cae7a764c2c70baeb75315bbb5e3317d6aee076",
+          "7a0ff21bc020f16299236374bb3c29674da67fa1766c0bfcf38deaa29d6adc1b",
+          "135742fcec0788ec3decf46ff25575d36f73212b630a2134657f1b5b9deb4778",
+          "f59b63bd4549af5a125027cd845031ab23ddf991df5dfb381d913dfd4908c81c"
+        ],
+        "replayStepHashes": [
+          "e7262b2d2cc38c49ed8566eeb10413d33a78d2fd1c720407d80b83154ae2f6da",
+          "1479c416628e3e1480b845a8bfbe826073b57a382ef0bca4dd2c6271ec1a4842",
+          "d9677b54b382f23b2796a54deafaf9c5419ec209d716c4b53bf909330ded28cc",
+          "cecea4d597b2fe13549fce1b2ce9c3725477bf51b38f1cc1c9648b11218a5c0c",
+          "b4ccb377ac3222a850872b76d33b7a304c7a0c0cbd0527c10782d70d300f4012",
+          "52a33016950bb953b77c0a7d10c6b7661ff4e1d475c6ed0f1e8bbae4076937c3",
+          "3a213c90da4bbacdfbd9f3f242be6aa75d9009a102023df56826a1c37b1a6cbb",
+          "23cd7c60a0540f5799599cc509b2333fb2d9da8a1e6f84dc65136af8616efbfd",
+          "859962a9097c6871ef6ea44deab3638bba5609e1c3e8803cc428248907ffa38e",
+          "50992d7f29735a47d7c2640e9367617d76ee9fa1bbaabbd82da467f8d5f15b14",
+          "d5bc039eb94ca485f7db5b13b718a79f33660b2a6a43907810b86748c25f39ed",
+          "9f4f8bd258db0d89c06238761609188eb0dc83de660824fee0c379662df2b09c",
+          "552edbb46fb9b829d082613c897085b2ed6735f7b552de28f0d678aa33095635",
+          "cae272675621bfe70c8bf1252077583ebee7dd53a1909af5358803a1e5e6045c",
+          "a1be9edafbe088843fe78462c34a379fff530beb28bde50cc690a5309afc143b",
+          "d40d04a31b1b603e829024ec6b110b0d3e065141af9de993731699c9d84aed34"
+        ],
+        "firstDivergentStep": 1,
+        "cpuLayoutEvidence": {
+          "checkpoint": {
+            "d0": 0,
+            "sp": 16777212,
+            "pc": 812,
+            "cycles": 54,
+            "candidates": [
+              {
+                "address": 4105916,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  54,
+                  -40,
+                  896040
+                ]
+              },
+              {
+                "address": 28068316,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  936
+                ]
+              },
+              {
+                "address": 29104636,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  432
+                ]
+              }
+            ]
+          },
+          "restored": {
+            "d0": 0,
+            "sp": 16777212,
+            "pc": 812,
+            "cycles": 54,
+            "candidates": [
+              {
+                "address": 4105916,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  54,
+                  784000,
+                  896040
+                ]
+              },
+              {
+                "address": 28068316,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  936
+                ]
+              },
+              {
+                "address": 29104636,
+                "prefix": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  936
+                ]
+              }
+            ]
+          }
+        },
+        "refreshSidecarReplay": {
+          "available": true,
+          "experiment": "fixture-refresh-sidecar-v1",
+          "capturedRefreshCycles": -40,
+          "ordinaryRestoredRefreshCycles": 784000,
+          "correctedHash": "f59b63bd4549af5a125027cd845031ab23ddf991df5dfb381d913dfd4908c81c",
+          "fullStateReplayEqual": true,
+          "allStepsEqual": true,
+          "firstDivergentStep": null,
+          "stepHashes": [
+            "17eb4f56b3cf79a7c142b200be68448be2291b00b8d4e478ed9183e89c3b0507",
+            "62f9a39582fc9ff547e949a297543cfc30bd7496057810d4156863dfaea1350b",
+            "d086d29218d8b4168c4401945ee7d7c70757ff1b12a2d9eadbc1f86fe11dd44f",
+            "3e1880304c55d4ad8c5dbad5c7826257021b9e5a8a22625b37787bde5d34020b",
+            "5f02a8fffd0ff3cd68fcd5e39ecf232690b64dec6086cf147e3fc41d260bd1c3",
+            "4a2df1b6f45d322d4fcae2834584a1ae2bd31a9538263cf8543e30e5e98d3793",
+            "e14f9c324f78141529c469073160f744f28e4fe084cfce6f3cf896e1a732f047",
+            "6c88d838c8ddb87e5ca04fabf29c181fe0f432d0d05450cfbdceac3f9dcf51c8",
+            "8d0d8c659081397a0d2dfb5e3a8eda3e1e74b3023a42643b7185d910ef8ecc46",
+            "b6fca4c18ced7c05639f5b90505b3a38f67083dfb53810b4cdec94cbcc0103be",
+            "b0f3b590eb2482b6feba65d1024e1bc5d0d6ee28ccb6c57894e645e2777366eb",
+            "1bd5e06ab1e3ef4f763b10ae8ef2b766aaae6b5296a59a12aed65151c7dd7e7e",
+            "6bc0dbf4b8bfebe7cd9549eb8cae7a764c2c70baeb75315bbb5e3317d6aee076",
+            "7a0ff21bc020f16299236374bb3c29674da67fa1766c0bfcf38deaa29d6adc1b",
+            "135742fcec0788ec3decf46ff25575d36f73212b630a2134657f1b5b9deb4778",
+            "f59b63bd4549af5a125027cd845031ab23ddf991df5dfb381d913dfd4908c81c"
+          ],
+          "gameFrames": [
+            313,
+            314,
+            315,
+            316,
+            317,
+            318,
+            319,
+            320,
+            321,
+            322,
+            323,
+            324,
+            325,
+            326,
+            327,
+            328
+          ]
+        },
+        "fieldHypotheses": [
+          "68000 D0",
+          "68000 PC",
+          "68000 SR",
+          "68000 cycles"
+        ],
+        "fieldLayoutVerified": false,
+        "fixtureSingleFrameSteps": true,
+        "exactEmulatedFrameVerified": false
+      },
+      "adapterBoundary": {
+        "scope": "local diagnostic adapter replay; no network transport",
+        "identity": {
+          "adapter": "genesis-adapter-v1",
+          "rom": "c12ec5da51b65a46838808ce9a0beadc98ea8308a028197789c9354ef6134a3d",
+          "core": "5f5992684612d264e206d1436e58db1a82b9e6332cab90544e07d0b911729c87",
+          "runtime": "93c96d7880e5ce4577281f4fc0e64b23c9c98b4fe48f0cfd32d36561d7e5f132",
+          "settings": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "frames": 16,
+        "checkpointChecksum": "c721c19b2956eed981062804449f3e414dbc61c6acb08c8087498cd04fd12a37",
+        "allStepsEqual": true,
+        "firstDivergentStep": null,
+        "stepChecksums": [
+          "0391308900c57c8f832b581b8212644a1bc5f040369838305ee7ba0c906c2b84",
+          "4ca964569b2cd0973c4f8ebfc630e58146cf8500c8c668c7c519f7ed979c371c",
+          "ac48f0af9fb240c5908283a06dd33f06baed2f58bbc3160dbd7ea4d61ae76386",
+          "c7f7e416caba62b652587fac7a2b8d20dcf00efa172a10a0ab97244a13326d6e",
+          "e8f9dd39480876b2214b6212c9a1fd2a39b0c414d6bb9936c4ce9fff71b7b852",
+          "1cfb7560b7083c48e10067f0f5d940d20846d90fdbe52739eb561ae026862e14",
+          "e771b9c04a54d313afe474bd4ec2cd5efe053b3984f55906bf35d41c34e0e8f5",
+          "3cd7b569284b316b23230f421e5ace9960702a80d8282cd81e68265514bf6eaa",
+          "0353aafe27bc20b8b79da8ca727bfb32becff7f3e36fb34096846cab709f72d5",
+          "602be3e88d84f37322b67b52d6895aa7e57576ebe32987e61f1d5394f442737f",
+          "133e2f9e87b08269e76b0b88ea1606bdac7128c11a921517ee7951489f4d0d16",
+          "a8c7a8aa12a0d33659f95ef256b7fe49b07177cdd73435bd800445deb93544d0",
+          "23c641a018d2772882743917c10356a6e16f5b43387e2200211c543cf9ae0148",
+          "187ec4fa15b14c2ea5a20fc7b0801cb61dcd317eb12d9c79d575a2e2ecf5830a",
+          "6b9ef0313dd65fc3abf2ce479225f0423665a6f10b66ad65e1c2a0fe139c678b",
+          "65c9e98b6d676e84d13fbc83555d14d4744adab69317e42c060889177ee85f92"
+        ],
+        "replayChecksums": [
+          "0391308900c57c8f832b581b8212644a1bc5f040369838305ee7ba0c906c2b84",
+          "4ca964569b2cd0973c4f8ebfc630e58146cf8500c8c668c7c519f7ed979c371c",
+          "ac48f0af9fb240c5908283a06dd33f06baed2f58bbc3160dbd7ea4d61ae76386",
+          "c7f7e416caba62b652587fac7a2b8d20dcf00efa172a10a0ab97244a13326d6e",
+          "e8f9dd39480876b2214b6212c9a1fd2a39b0c414d6bb9936c4ce9fff71b7b852",
+          "1cfb7560b7083c48e10067f0f5d940d20846d90fdbe52739eb561ae026862e14",
+          "e771b9c04a54d313afe474bd4ec2cd5efe053b3984f55906bf35d41c34e0e8f5",
+          "3cd7b569284b316b23230f421e5ace9960702a80d8282cd81e68265514bf6eaa",
+          "0353aafe27bc20b8b79da8ca727bfb32becff7f3e36fb34096846cab709f72d5",
+          "602be3e88d84f37322b67b52d6895aa7e57576ebe32987e61f1d5394f442737f",
+          "133e2f9e87b08269e76b0b88ea1606bdac7128c11a921517ee7951489f4d0d16",
+          "a8c7a8aa12a0d33659f95ef256b7fe49b07177cdd73435bd800445deb93544d0",
+          "23c641a018d2772882743917c10356a6e16f5b43387e2200211c543cf9ae0148",
+          "187ec4fa15b14c2ea5a20fc7b0801cb61dcd317eb12d9c79d575a2e2ecf5830a",
+          "6b9ef0313dd65fc3abf2ce479225f0423665a6f10b66ad65e1c2a0fe139c678b",
+          "65c9e98b6d676e84d13fbc83555d14d4744adab69317e42c060889177ee85f92"
+        ]
+      }
+    }
+  ]
+}

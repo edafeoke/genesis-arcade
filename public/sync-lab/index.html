@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; frame-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Synchronization lab · Genesis Arcade</title>
+  <link rel="stylesheet" href="/sync-lab/lab.css"><script src="/sync-lab/lab.js" defer></script>
+</head><body><main>
+  <a href="/">← Back to the arcade</a><p class="eyebrow">GENESIS ARCADE / ENGINEERING LAB</p>
+  <h1>Measure before<br>multiplayer.</h1>
+  <p class="intro">Two isolated emulator instances. One local ROM. Test pause, frame counters and save-state restoration before selecting a networking strategy.</p>
+  <p><a href="/sync-lab/index.html?adapter=1">Test instrumented loop adapter →</a> · <a href="/sync-lab/index.html">Original core baseline</a></p>
+  <section class="controls"><label>Choose a local Genesis ROM<input id="rom" type="file" accept=".bin,.md,.gen"></label><label>Trace length<select id="trace-length"><option value="16">16 frames</option><option value="120" selected>120 frames</option></select></label><button id="probe" disabled>Run capability probe</button><button id="download" disabled>Export report</button></section>
+  <p id="status" role="status" aria-live="polite">ROM bytes stay in this browser. No multiplayer server is used.</p>
+  <div class="runtimes"><section><h2><span>01</span> Runtime A</h2><div id="runtime-a" class="screen"></div></section><section><h2><span>02</span> Runtime B</h2><div id="runtime-b" class="screen"></div></section></div>
+  <section class="results"><h2>Evidence ledger</h2><p>Start both emulators, then run the probe. Tests briefly resume with released inputs and finish paused. Use a diagnostic ROM: do not run this on a session you want to preserve.</p><div id="results"></div></section>
+  <p class="limit">This is a capability test, not synchronized play. Wall-clock resume does not guarantee an exact number of emulated frames. Matching state bytes alone do not prove determinism or rollback.</p>
+</main></body></html>

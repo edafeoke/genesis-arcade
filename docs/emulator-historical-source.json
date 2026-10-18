@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/EmulatorJS/Genesis-Plus-GX",
+  "historicalCandidate": "def3a7c0e413ef35a7d9d4430e5c9c9a5698b4fe",
+  "exactBinaryBuildRevisionProven": false,
+  "sha256": {
+    "core/m68k/m68k.h": "fe641df783d4fc8f85a1bee873f18cd9158399c8f5fe1dfc8ff6b758b99e638a",
+    "core/state.c": "662f3052fa73f5ae363ded79421b0e6f09fd1e8e97de19f703a472784b9c6aa1"
+  }
+}

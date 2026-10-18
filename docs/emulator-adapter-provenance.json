@@ -1,0 +1,6 @@
+{
+  "sourceArchiveSHA256": "790d33b43cb9652fffdf74a3cd505cb72c7c62d39899fd5a12a618c2077c4e64",
+  "instrumentedArchiveSHA256": "5f5992684612d264e206d1436e58db1a82b9e6332cab90544e07d0b911729c87",
+  "patch": "Expose an Asyncify-aware paused main-loop callback as genesisLabTick, suppressing automatic resume during the operation; no WASM changes.",
+  "scope": "Experimental frontend iteration, not certified emulated-frame stepping."
+}

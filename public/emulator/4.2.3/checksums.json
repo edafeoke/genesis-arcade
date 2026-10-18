@@ -1,0 +1,31 @@
+{
+  "version": "4.2.3",
+  "core": "genesis_plus_gx",
+  "coreBuild": "2025-06-14T18:29:12+00:00",
+  "sha256": {
+    "CORE-LICENSE.txt": "c38ff8ea57f501f63a8e4a9e22a67be12eb006345ce2059f0419b69d8f7734cd",
+    "CORE-PROVENANCE.json": "f320cad2795b01403709582347a988e6c530728c4fabbb16f57690a16f2435d1",
+    "GENESIS-PLUS-GX-LICENSE.txt": "642c163624269243d1f6b29d759d4e3a2d161bdc272c90d82ecbeec82ae26755",
+    "LICENSE": "a617fab6d251b3302b1cb2c1c94f52d1c584f6fcb2fc218ec1a475bc08053a61",
+    "NOTICE.md": "2d3ef766dacb158caf663b2eeed30e29af6da2a2851cb139c632b8c588b8b149",
+    "data/compression/README.md": "c01bf373463b6eac94ce2db8f6102010c104683bd70203e9b1343865693d1db5",
+    "data/compression/extract7z.js": "4ac9933b995a516cb6b3ca4027db860278372a20c21c405d93ceb1998498853a",
+    "data/compression/extractzip.js": "3cc825428724213acd43d30552a78008e0869b2326de17dee240dbff9ee2f629",
+    "data/compression/libunrar.js": "bc35b98ec95020ec047f4762de3e66629741eee3826022195498d2a1e0fc102c",
+    "data/compression/libunrar.wasm": "e4ea9bd0b13a9767916b424469e30205f47f267ecd9125ed56fb9ff0b9bc1b58",
+    "data/cores/genesis_plus_gx-legacy-wasm.data": "790d33b43cb9652fffdf74a3cd505cb72c7c62d39899fd5a12a618c2077c4e64",
+    "data/cores/genesis_plus_gx-wasm.data": "146b01985a231ad63d14f2ec439de009b29179c8670a36a5aee09bf74bbddd38",
+    "data/cores/reports/genesis_plus_gx.json": "5936a8ce8d7f010d5bfdd8c3bba2b2414f103b3a703121e56f2724b24dbe7ff3",
+    "data/emulator.css": "0ba5b1ce183b6ecb95c17e54e89fbae77697ebb94ec23caca5fd19f9b569defe",
+    "data/loader.js": "69e0903bf1e2f62ced78895e7e511fa26e11316f7eb734925c35e919ba1287b2",
+    "data/src/GameManager.js": "f026130eda3648557498c54c70cbb5b36fd71b088e7e42e5a13e413aab11d888",
+    "data/src/compression.js": "bd6723ec29fee8de81118cfbddfcb53301b8f41f7c6fb22c2de44dedbf111c2c",
+    "data/src/emulator.js": "4a0b0541a898657fa139df184619ef015e597c84287294ea776274ac57a37e9e",
+    "data/src/gamepad.js": "27707ee9256cf3e1a6f32d1c3c42f2aed991d637773699fff566008229cc09c8",
+    "data/src/nipplejs.js": "cf745190f5dc5db942ad54f5683d56c6d6da445646f4b4fc23c049c9985a04df",
+    "data/src/shaders.js": "79bcd4c35740b2858fc28f2f1894ddb8f483f1aba6f564869a713515726fe902",
+    "data/src/socket.io.min.js": "b0e735814f8dcfecd6cdb8a7ce95a297a7e1e5f2727a29e6f5901801d52fa0c5",
+    "data/src/storage.js": "06759f310bb2d782d2728e1d3417a0d8f613eff935d2959c1a705670041a6f2e",
+    "data/version.json": "d8991427000a96fb97daefdb62178071e9bbff911760706148e584ae8d69f9e7"
+  }
+}

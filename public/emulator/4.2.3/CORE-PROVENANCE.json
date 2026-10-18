@@ -1,0 +1,11 @@
+{
+  "source": "https://cdn.emulatorjs.org/4.2.3/data/cores/",
+  "originalArchiveSHA256": {
+    "genesis_plus_gx-wasm.data": "190297a6f86757405090f1a2266f67dfe1a570a528c583434ed3641a5664f768",
+    "genesis_plus_gx-legacy-wasm.data": "2a1edeb68d7ec882149ed3cd5d3aa95a6ac231ebabaf82cdb56175a8b62967cc"
+  },
+  "packaging": "Original 7z archives repacked as ZIP without changing extracted file bytes. EmulatorJS detects compression by signature. This avoids slow asm.js 7z decoding in WebKit.",
+  "coreVersion": "2.0.2",
+  "sourceRepo": "https://github.com/EmulatorJS/Genesis-Plus-GX",
+  "buildRepo": "https://github.com/EmulatorJS/build"
+}

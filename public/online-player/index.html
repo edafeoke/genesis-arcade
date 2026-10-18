@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' blob: 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' blob:; worker-src 'self' blob:; media-src 'self' blob: data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Genesis Arcade Online Player</title>
+  <link rel="stylesheet" href="/player/player.css">
+  <link rel="stylesheet" href="/online-player/session.css">
+  <script src="/online-player/session.js" defer></script>
+  <script src="/online-player/bridge.js" defer></script>
+
+</head>
+<body><div id="game" aria-label="Genesis emulator"></div><p id="loading" role="status">Preparing the Genesis player…</p><section id="remote-view" hidden><video id="remote-video" autoplay playsinline muted aria-label="Host game stream"></video><button id="sound" disabled>Waiting for sound</button></section><p id="online-status" role="status">Preparing online session…</p><div id="input-bar"><label>Input device <select id="input-device"><option value="keyboard">Keyboard only</option><option value="shared" id="shared-keyboard-option">Shared keyboard for both players</option><option value="gamepad-0">Keyboard + Gamepad 1</option><option value="gamepad-1">Keyboard + Gamepad 2</option><option value="gamepad-2">Keyboard + Gamepad 3</option><option value="gamepad-3">Keyboard + Gamepad 4</option></select></label><span id="keyboard-help">Arrows move. A/S/D = A/B/C. Enter = Start.</span></div><nav id="online-controls" aria-label="Game controls"><button data-button="4" aria-label="Up">Up</button><button data-button="5" aria-label="Down">Down</button><button data-button="6" aria-label="Left">Left</button><button data-button="7" aria-label="Right">Right</button><button data-button="1" aria-label="A">A</button><button data-button="0" aria-label="B">B</button><button data-button="8" aria-label="C">C</button><button data-button="10" aria-label="X">X</button><button data-button="9" aria-label="Y">Y</button><button data-button="11" aria-label="Z">Z</button><button data-button="2" aria-label="Mode">Mode</button><button data-button="3" aria-label="Start">Start</button></nav></body>
+</html>

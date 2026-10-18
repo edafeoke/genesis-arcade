@@ -1,0 +1,176 @@
+{
+  "measuredAt": "2026-10-17T11:20:09.809Z",
+  "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+  "romHash": "c12ec5da51b65a46838808ce9a0beadc98ea8308a028197789c9354ef6134a3d",
+  "profile": "ejs4.2.3:genesis-plus-gx2.0.2:legacy:single-thread:v1",
+  "adapterMode": true,
+  "adapterProvenance": {
+    "sourceArchiveSHA256": "790d33b43cb9652fffdf74a3cd505cb72c7c62d39899fd5a12a618c2077c4e64",
+    "instrumentedArchiveSHA256": "5f5992684612d264e206d1436e58db1a82b9e6332cab90544e07d0b911729c87",
+    "patch": "Expose an Asyncify-aware paused main-loop callback as genesisLabTick, suppressing automatic resume during the operation; no WASM changes.",
+    "scope": "Experimental frontend iteration, not certified emulated-frame stepping."
+  },
+  "scope": "Two runtimes on one browser; no synchronized input trace, exact frame step, cross-device or rollback verification.",
+  "results": [
+    {
+      "frame": 2098,
+      "pausedFrame": 2098,
+      "advancedFrame": 2114,
+      "pausedCounterStable": true,
+      "pausedSerializationStable": true,
+      "resumeAdvanced": true,
+      "immediateRestoreEqual": false,
+      "stateBytes": 1036312,
+      "baselineHash": "ff747a83267e62f72565c3c4b69f54b16c32f9207d63cb80ed60e2307b8f56ae",
+      "repeatHash": "ff747a83267e62f72565c3c4b69f54b16c32f9207d63cb80ed60e2307b8f56ae",
+      "restoredHash": "f1a2be81fa6915d4d592de12e0b87afa91619d0c2be220bb0c2604348e1790a1",
+      "supportsStates": true,
+      "exportedFrameControls": [
+        "_get_current_frame_count"
+      ],
+      "exactFrameStepVerified": false,
+      "adapter": {
+        "frontendTicks": 16,
+        "counterDelta": 16,
+        "stateChanged": true,
+        "checkpointHash": "ad7f56cd42fc5dbb6b6e65661e2412fc04462ca74051695682e4c7c2dc5a01c6",
+        "traceHash": "d88e3951ebe95031bf80629519f914f51c7dadf07d4000c27278dbf8c9d1f1cb",
+        "restoreHashes": [
+          "ad7f56cd42fc5dbb6b6e65661e2412fc04462ca74051695682e4c7c2dc5a01c6"
+        ],
+        "restoreMatchIndex": 0,
+        "replayHash": "df619cb2a4c3a0065268c5f3693bc7125566e0d582e21541aff42538e5886819",
+        "replayEqual": false,
+        "differingBytes": 5,
+        "differingOffsets": [
+          144180,
+          144181,
+          144244,
+          144248,
+          144258
+        ],
+        "gameFrameBefore": {
+          "value": 2096,
+          "offset": 32,
+          "swapped": true
+        },
+        "traceGameFrames": [
+          2097,
+          2098,
+          2099,
+          2100,
+          2101,
+          2102,
+          2103,
+          2104,
+          2105,
+          2106,
+          2107,
+          2108,
+          2109,
+          2110,
+          2111,
+          2112
+        ],
+        "replayGameFrames": [
+          2097,
+          2098,
+          2099,
+          2100,
+          2101,
+          2102,
+          2103,
+          2104,
+          2105,
+          2106,
+          2107,
+          2108,
+          2109,
+          2110,
+          2111,
+          2112
+        ],
+        "fixtureSingleFrameSteps": true,
+        "exactEmulatedFrameVerified": false
+      }
+    },
+    {
+      "frame": 1956,
+      "pausedFrame": 1956,
+      "advancedFrame": 1972,
+      "pausedCounterStable": true,
+      "pausedSerializationStable": true,
+      "resumeAdvanced": true,
+      "immediateRestoreEqual": false,
+      "stateBytes": 1036312,
+      "baselineHash": "b2e4462e54840e157b5ce5adee279a5fc1a3bb8923fe59acc002d89baa562359",
+      "repeatHash": "b2e4462e54840e157b5ce5adee279a5fc1a3bb8923fe59acc002d89baa562359",
+      "restoredHash": "b74439985460d807e0663bc221ee3d059a4384440f29dd08480002e6db92be54",
+      "supportsStates": true,
+      "exportedFrameControls": [
+        "_get_current_frame_count"
+      ],
+      "exactFrameStepVerified": false,
+      "adapter": {
+        "frontendTicks": 16,
+        "counterDelta": 16,
+        "stateChanged": true,
+        "checkpointHash": "76487405018d3e6948219ce1ba7953acf01787c630967375e1e5bd5f348c37c9",
+        "traceHash": "e0fe879017fb2c2f1e4cb4fca8a750a67d96ab39e5267de9ed762926176bdeb7",
+        "restoreHashes": [
+          "76487405018d3e6948219ce1ba7953acf01787c630967375e1e5bd5f348c37c9"
+        ],
+        "restoreMatchIndex": 0,
+        "replayHash": "13d64dceb0406e180b108f9033bb718be1f0b453612da583511c64c4ce46cbb4",
+        "replayEqual": false,
+        "differingBytes": 1,
+        "differingOffsets": [
+          144258
+        ],
+        "gameFrameBefore": {
+          "value": 1954,
+          "offset": 32,
+          "swapped": true
+        },
+        "traceGameFrames": [
+          1955,
+          1956,
+          1957,
+          1958,
+          1959,
+          1960,
+          1961,
+          1962,
+          1963,
+          1964,
+          1965,
+          1966,
+          1967,
+          1968,
+          1969,
+          1970
+        ],
+        "replayGameFrames": [
+          1955,
+          1956,
+          1957,
+          1958,
+          1959,
+          1960,
+          1961,
+          1962,
+          1963,
+          1964,
+          1965,
+          1966,
+          1967,
+          1968,
+          1969,
+          1970
+        ],
+        "fixtureSingleFrameSteps": true,
+        "exactEmulatedFrameVerified": false
+      }
+    }
+  ]
+}

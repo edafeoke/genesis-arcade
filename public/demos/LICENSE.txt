@@ -1,0 +1,16 @@
+Quickdraw Duel and the Genesis Arcade input diagnostics
+Copyright 2026 Genesis Arcade contributors
+
+CC0 1.0 Universal: To the extent possible under law, the authors have waived
+all copyright and related or neighboring rights to the original game code,
+bitmap glyphs and generated ROMs. The work is provided without warranty.
+
+The readable original source is scripts/build-quickdraw.mjs. It generates the
+complete Quickdraw Duel ROM deterministically with Node.js. It contains no
+commercial game, BIOS, artwork, music or other third-party ROM content.
+
+Two-player instructions:
+Press Start on either controller. Wait for the green GO signal, then press B.
+The first player to press B wins. Pressing B before GO loses the round.
+Press Start for another round. Simultaneous presses in one video frame tie.
+Genesis Arcade keyboard: Enter = Start; S = B.
