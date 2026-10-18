@@ -6,16 +6,10 @@ import type { Socket } from 'socket.io-client';
 import { CHANNEL, type Reply, type StreamSession, type StreamSignal } from '@/lib/multiplayer/protocol';
 import type { Game } from '@/lib/library';
 
+import { iceServers } from '@/lib/multiplayer/ice';
 const PLAYER = 'genesis-player-v1';
 const STREAM = 'genesis-stream-v1';
-function iceServers(): RTCIceServer[] {
-  const configured = process.env.NEXT_PUBLIC_RTC_ICE_SERVERS;
-  if (!configured) return [{ urls: 'stun:stun.l.google.com:19302' }];
-  const servers = JSON.parse(configured) as RTCIceServer[];
-  if (!Array.isArray(servers) || servers.length > 8 || servers.some(server => !server || !(typeof server.urls === 'string' || Array.isArray(server.urls)) || (typeof server.urls === 'string' ? [server.urls] : server.urls).some(url => typeof url !== 'string' || !/^(stun|stuns|turn|turns):/.test(url)))) throw new Error('Invalid ICE server configuration.');
-  return servers;
-}
-export default function OnlinePlayer({ game, session, myId, client, onEnd }: { game: Game; session: StreamSession; myId: string; client: Socket; onEnd: (message?: string) => void }) {
+export default function OnlinePlayer({ game, session, myId, client, onEnd, onMedia }: { game: Game; session: StreamSession; myId: string; client: Socket; onEnd: (message?: string) => void; onMedia?: (media: MediaStream | null) => void }) {
   const frame = useRef<HTMLIFrameElement>(null);
   const panel = useRef<HTMLElement>(null);
   const [status, setStatus] = useState('Preparing peer connection…');
@@ -23,14 +17,16 @@ export default function OnlinePlayer({ game, session, myId, client, onEnd }: { g
   const [error, setError] = useState('');
   const host = session.hostId === myId;
   const endFromConnection = useEffectEvent((message: string) => onEnd(message));
-  const slot = host ? session.hostSlot : session.hostSlot === 1 ? 2 : 1;
+  const mediaChanged = useEffectEvent((media: MediaStream | null) => onMedia?.(media));
+  const {epoch,hostSlot} = session;
+  const slot = host ? hostSlot : hostSlot === 1 ? 2 : 1;
   useEffect(() => {
     let initialized = false, loaded = false, ended = false;
     const pending: StreamSignal[] = [];
     const send = (type: string, value: object = {}) => frame.current?.contentWindow?.postMessage({ channel: STREAM, type, ...value }, location.origin);
     const fail = (message: string) => { if (ended) return; ended = true; setError(message); send('stop'); endFromConnection(message); };
     const relay = (value: StreamSignal) => {
-      if (value.epoch !== session.epoch || ended) return;
+      if (value.epoch !== epoch || ended) return;
       if (!initialized) { if (pending.length < 100) pending.push(value); else fail('Too many queued connection messages.'); return; }
       send('signal', { signal: value.signal });
     };
@@ -44,13 +40,14 @@ export default function OnlinePlayer({ game, session, myId, client, onEnd }: { g
       if (message?.channel === PLAYER && message.type === 'error') fail(message.message || 'The host emulator could not start.');
       if (message?.channel !== STREAM) return;
       if (message.type === 'ready') {
-        try { send('init', { config: { epoch: session.epoch, host, hostSlot: session.hostSlot, iceServers: iceServers() } }); }
+        try { send('init', { config: { epoch: epoch, host, hostSlot: hostSlot, iceServers: iceServers() } }); }
         catch { fail('The multiplayer ICE server configuration is invalid.'); }
       }
+      if (message.type === 'media-ready' && host) mediaChanged((frame.current?.contentWindow as (Window & {genesisSpectatorMedia?: MediaStream}) | null)?.genesisSpectatorMedia ?? null);
       if (message.type === 'initialized') { initialized = true; pending.splice(0).forEach(relay); }
       if (message.type === 'status' && typeof message.message === 'string') setStatus(message.message.slice(0, 240));
       if (message.type === 'latency' && Number.isFinite(message.milliseconds)) setLatency(message.milliseconds);
-      if (message.type === 'signal') client.timeout(5000).emit(CHANNEL.signal, { epoch: session.epoch, signal: message.signal }, (err: Error | null, reply: Reply) => {
+      if (message.type === 'signal') client.timeout(5000).emit(CHANNEL.signal, { epoch: epoch, signal: message.signal }, (err: Error | null, reply: Reply) => {
         if (err || !reply?.ok) fail(err ? 'Signaling timed out.' : !reply.ok ? reply.message : 'Signaling failed.');
       });
       if (message.type === 'ended') fail(message.message || 'The game connection ended.');
@@ -63,11 +60,11 @@ export default function OnlinePlayer({ game, session, myId, client, onEnd }: { g
     document.body.style.overflow = 'hidden';
     panel.current?.focus();
     return () => {
-      send('stop'); window.removeEventListener('message', listener);
+      mediaChanged(null); send('stop'); window.removeEventListener('message', listener);
       client.off(CHANNEL.signal, relay); client.off('disconnect', disconnect);
       document.body.style.overflow = previousOverflow; previousFocus?.focus();
     };
-  }, [client, game, host, session, myId]);
+  }, [client, game, host, epoch, hostSlot, myId]);
   return <div className="player-backdrop"><section ref={panel} tabIndex={-1} className="player-panel" role="dialog" aria-modal="true" aria-labelledby="online-player-title" onKeyDown={event => {
     if (event.key === 'Escape' && !document.fullscreenElement) onEnd();
     if (event.key === 'Tab') {
@@ -84,7 +81,7 @@ export default function OnlinePlayer({ game, session, myId, client, onEnd }: { g
       frame.current?.contentWindow?.postMessage({ channel: STREAM, type: 'ping' }, location.origin);
       frame.current?.contentWindow?.postMessage({ channel: PLAYER, type: 'ping' }, location.origin);
     }}/>
-    <div className="player-help"><p>Click the game to focus. Arrows: move · A/S/D: A/B/C · Q/W/E: X/Y/Z · Enter: Start · Right Shift: Mode. Standard gamepads and the on-screen buttons also work.</p></div>
+    <div className="player-help"><p>Click the game to focus. Arrows: move · A/S/D: A/B/C · Q/W/E: X/Y/Z · Enter: Start · Right Shift: Mode. Open Remap controller below the game to change and save your keys or standard gamepad buttons. On-screen buttons also work.</p></div>
     <p className="player-save-note">The host runs the game and streams picture and sound. Input delay depends on your connection. End Game returns both players to the waiting room.</p>
   </section></div>;
 }

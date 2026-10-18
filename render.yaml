@@ -1,0 +1,23 @@
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: genesis-arcade-rooms
+    runtime: node
+    plan: free
+    numInstances: 1
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm server:build
+    startCommand: pnpm server:start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: MULTIPLAYER_HOST
+        value: 0.0.0.0
+      - key: MULTIPLAYER_PORT
+        value: "10000"
+      - key: MULTIPLAYER_STREAMING
+        value: "true"
+      - key: MULTIPLAYER_ORIGINS
+        sync: false

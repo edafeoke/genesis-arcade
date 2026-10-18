@@ -1,0 +1,21 @@
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { createSave, decodeSave, deleteSave, exportSave, listSaves, putSave, type ArcadeSave } from '@/lib/saves';
+import { EMULATOR_PROFILE } from '@/lib/multiplayer/protocol';
+import type { Game } from '@/lib/library';
+
+export default function SaveManager({game, capture, restore}: {game?: Game; capture?: () => Promise<Blob>; restore?: (save: ArcadeSave) => Promise<void>}) {
+  const [saves,setSaves] = useState<ArcadeSave[]>([]), [busy,setBusy] = useState(false), [message,setMessage] = useState('');
+  const [confirmation,setConfirmation]=useState<{label:string;action:()=>Promise<void>}|null>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const refresh = async () => setSaves((await listSaves()).filter(save => !game || save.gameId === game.id).sort((a,b) => b.createdAt-a.createdAt));
+  useEffect(() => { let alive = true; listSaves().then(rows => {if(alive)setSaves(rows.filter(save => !game || save.gameId === game.id).sort((a,b) => b.createdAt-a.createdAt));}).catch(() => {if(alive)setMessage('Save storage is unavailable.');}); return () => {alive=false;}; },[game]);
+  async function run(action: () => Promise<void>) {setBusy(true);setMessage('');try {await action();await refresh();} catch(error){setMessage(error instanceof Error ? error.message : 'Save operation failed.');} finally {setBusy(false);}}
+  return <section className="save-manager" aria-label="Save management"><div className="section-heading"><div><span className="tiny-label">PICK UP WHERE YOU LEFT OFF</span><h3>Save states</h3><p>{game ? 'Snapshots for this exact ROM. Save before closing.' : 'Manage snapshots from your games. Open a game to create or load a save.'}</p></div><div className="room-code-actions">{capture && game && <button className="primary-button" disabled={busy} onClick={() => void run(async()=>{await createSave(game.id,game.name,await capture());setMessage('Snapshot saved on this device.');})}>Save now</button>}<button className="outline-button" disabled={busy} onClick={()=>input.current?.click()}>Import save</button></div></div>
+    <input ref={input} hidden type="file" accept=".genesis-save,application/json" onChange={event => {const file=event.target.files?.[0];event.target.value='';if(file)void run(async()=>{const save=await decodeSave(file);if(game && save.gameId!==game.id)throw new Error('This save belongs to a different ROM.');await putSave(save);setMessage('Save imported.');});}}/>
+    {confirmation && <div className="notice" role="alert"><p>{confirmation.label}</p><button className="primary-button" disabled={busy} onClick={()=>{const action=confirmation.action;setConfirmation(null);void run(action);}}>Confirm</button><button className="outline-button" disabled={busy} onClick={()=>setConfirmation(null)}>Cancel</button></div>}
+    {message && <p role="status" className="room-notice">{message}</p>}
+    {!saves.length && <p className="save-empty">No snapshots yet. Saves stay in this browser; export a backup to keep them.</p>}
+    <div className="save-list">{saves.map(save=><article key={save.id} className="save-row"><div><label>Save name<input aria-label={`Save name ${save.id}`} defaultValue={save.name} maxLength={120} disabled={busy} onBlur={event=>{const name=event.target.value.trim();if(name && name!==save.name)void run(async()=>{await putSave({...save,name});});else event.target.value=save.name;}}/></label><small>{save.gameName} · {new Date(save.createdAt).toLocaleString()} · {(save.data.size/1024).toFixed(0)} KB</small></div><div className="room-code-actions">{restore && <button className="outline-button" disabled={busy || save.profile!==EMULATOR_PROFILE} onClick={()=>{setConfirmation({label:'Load this snapshot and replace the current game progress?',action:async()=>{await restore(save);setMessage('Snapshot loaded.');}});}}>Load</button>}<button className="outline-button" disabled={busy} onClick={()=>void run(()=>exportSave(save))}>Export</button><button className="leave-room-button" disabled={busy} onClick={()=>{setConfirmation({label:`Delete “${save.name}” from this browser? Export a backup first if you need to keep it.`,action:async()=>{await deleteSave(save.id);}});}}>Delete</button></div></article>)}</div>
+  </section>;
+}

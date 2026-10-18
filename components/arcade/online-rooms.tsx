@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import PublicLobbies from './public-lobbies';
+import RoomPeers from './room-peers';
 import OnlinePlayer from './online-player';
 import { ArrowLeftRight, Check, Copy, DoorOpen, Plug, Users } from 'lucide-react';
 import { CHANNEL, EMULATOR_PROFILE, codeSchema, tokenSchema, type GameMetadata, type Reply, type RoomSnapshot, type SessionHello } from '@/lib/multiplayer/protocol';
@@ -25,7 +26,7 @@ function serviceURL() {
   return url.origin;
 }
 
-export default function OnlineRooms({ games, guest, libraryReady, active, addDemo, demoBusy }: { games: Game[]; guest: string; libraryReady: boolean; active: boolean; addDemo: () => Promise<void>; demoBusy: boolean }) {
+export default function OnlineRooms({ games, guest, libraryReady, active, addDemo, demoBusy, onLibraryChange }: { games: Game[]; guest: string; libraryReady: boolean; active: boolean; addDemo: () => Promise<void>; demoBusy: boolean; onLibraryChange: () => Promise<void> }) {
   const socket = useRef<Socket | null>(null);
   const [lobbyClient, setLobbyClient] = useState<Socket | null>(null);
   const [mode, setMode] = useState<'private' | 'public'>('private');
@@ -38,6 +39,7 @@ export default function OnlineRooms({ games, guest, libraryReady, active, addDem
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [media,setMedia] = useState<MediaStream|null>(null);
   const [latency, setLatency] = useState<number | null>(null);
 
   useEffect(() => {
@@ -149,28 +151,29 @@ export default function OnlineRooms({ games, guest, libraryReady, active, addDem
   }
   const me = room?.players.find(player => player.id === myId);
   const host = room?.hostId === myId;
+  const spectator = !!room?.spectators?.some(member=>member.id===myId);
   const online = connection === 'connected';
   const canReady = !!room && games.some(game => game.id === me?.game?.hash) && room.compatibility === 'matched' && room.players.every(player => player.connected) && !!me?.game?.multiplayerConfirmed;
   const compatibilityLabel = room?.compatibility === 'matched' ? 'ROM hashes and declared emulator profiles match' : room?.compatibility === 'rom-mismatch' ? 'ROM contents differ. Select matching copies of the game.' : room?.compatibility === 'profile-mismatch' ? 'Emulator profiles differ. Both players need the same app build.' : 'Waiting for both players to select a local game';
 
   useEffect(() => {
-    if (!libraryReady || connection !== 'connected' || !me?.game?.hash || games.some(game => game.id === me.game?.hash)) return;
+    if (spectator || !libraryReady || connection !== 'connected' || !me?.game?.hash || games.some(game => game.id === me.game?.hash)) return;
     socket.current?.timeout(5000).emit(CHANNEL.game, { game: null }, (error: Error | null, reply: Reply) => {
       if (error || !reply?.ok) setError('The selected ROM is no longer in your library. Select an available game after reconnecting.');
     });
-  }, [libraryReady, connection, games, me?.game?.hash]);
+  }, [libraryReady, connection, games, me?.game?.hash, spectator]);
 
   const playingGame = games.find(game => game.id === room?.stream?.gameHash);
   return <section className="online-panel rooms-panel">
-    {room?.stream && playingGame && lobbyClient && <OnlinePlayer key={room.stream.epoch} game={playingGame} session={room.stream} myId={myId} client={lobbyClient} onEnd={message => { if (message) setNotice(message); void request(CHANNEL.streamStop, {epoch:room.stream!.epoch}); }}/>} 
+    {room?.stream && !spectator && playingGame && lobbyClient && <OnlinePlayer key={room.stream.epoch} game={playingGame} session={room.stream} myId={myId} client={lobbyClient} onMedia={setMedia} onEnd={message => { if (message) setNotice(message); void request(CHANNEL.streamStop, {epoch:room.stream!.epoch}); }}/>}
     <div className="room-intro"><div><span className="hero-tag">ONLINE MULTIPLAYER</span><h2>Bring a friend. Pick a classic.</h2><p>Create a two-player waiting room, match your local ROMs, and choose your controller positions.</p></div><div className={`connection-pill ${online ? 'connected' : ''}`} role="status"><span className={online ? 'green-dot' : 'soon-dot'}/>{connection === 'connected' ? 'Connected' : connection === 'connecting' ? 'Connecting…' : connection === 'reconnecting' ? 'Reconnecting…' : 'Disconnected'}{online && latency !== null && <span>{latency} ms RTT</span>}</div></div>
-    <div className="notice room-limitation">Casual multiplayer uses host streaming: one emulator, two controller ports. The host shares picture and sound; ROM files stay local. Both players need a compatible two-player game.</div>
+    <div className="notice room-limitation">Casual multiplayer uses host streaming: one emulator, two controller ports. The host shares picture and sound; ROM files are never uploaded to the room server. Both players need a compatible two-player game.</div>
     {!room?.stream && <div className="room-demo"><div><strong>Ready for a quick duel?</strong><p>Try our original two-player Genesis game. Press Start, wait for green, then press B first. Early presses lose.</p></div><button className="outline-button" disabled={demoBusy} onClick={() => { void addDemo(); }}>{demoBusy ? 'Adding…' : 'Add free two-player demo'}</button></div>}
     {error && <div className="room-error" role="alert">{error}</div>}
     {notice && <p className="room-notice" role="status">{notice}</p>}
     {!online && <button className="primary-button" onClick={connect} disabled={connection === 'connecting'}><Plug size={16}/>{connection === 'idle' ? 'Connect to multiplayer' : 'Reconnect to multiplayer'}</button>}
     {!room && <div className="room-mode-tabs" role="tablist" aria-label="Room type">{(['private','public'] as const).map(value => <button key={value} role="tab" id={`tab-${value}`} aria-selected={mode === value} aria-controls={`panel-${value}`} onClick={() => {setMode(value);setError('');}}>{value === 'private' ? 'Private Room' : 'Public Lobbies'}</button>)}</div>}
-    {!room ? <div role="tabpanel" id={`panel-${mode}`} aria-labelledby={`tab-${mode}`}>{mode === 'public' ? <PublicLobbies client={online ? lobbyClient : null} active={active} games={games} busy={busy} onCreate={game => request(CHANNEL.create,{visibility:'public',game})} onJoin={id => request(CHANNEL.joinPublic,{id})}/> : <div className="mode-grid"><article><Users size={29}/><h3>Private Room</h3><p>Your room, your player two. Share a code or a private invitation link. No account required.</p><button className="primary-button" disabled={!online || busy} onClick={() => request(CHANNEL.create, {})}>Create Room</button></article><article><DoorOpen size={29}/><h3>Join Room</h3><p>Have an invitation? Enter the host’s ten-character room code below.</p><form onSubmit={event => { event.preventDefault(); if (!codeSchema.safeParse(code).success) {setError('Enter a valid ten-character room code.'); return;} void request(CHANNEL.join, { code, ...(pendingInvite ? { inviteToken: pendingInvite } : {}) }); }}><label className="room-code-input">Room Code<input value={code} autoComplete="off" spellCheck={false} maxLength={10} onChange={event => {setCode(event.target.value.toUpperCase().replace(/[^A-Z2-9]/g, '')); setPendingInvite(undefined);}} placeholder="XXXXXXXXXX"/></label><button className="outline-button" disabled={!online || busy || code.length !== 10}>Join Room</button></form></article></div>}</div> : <>
+    {!room ? <div role="tabpanel" id={`panel-${mode}`} aria-labelledby={`tab-${mode}`}>{mode === 'public' ? <PublicLobbies client={online ? lobbyClient : null} active={active} games={games} busy={busy} onCreate={game => request(CHANNEL.create,{visibility:'public',game})} onJoin={id => request(CHANNEL.joinPublic,{id})} onWatch={id=>request(CHANNEL.watchPublic,{id})}/> : <div className="mode-grid"><article><Users size={29}/><h3>Private Room</h3><p>Your room, your player two. Share a code or a private invitation link. No account required.</p><button className="primary-button" disabled={!online || busy} onClick={() => request(CHANNEL.create, {})}>Create Room</button></article><article><DoorOpen size={29}/><h3>Join Room</h3><p>Have an invitation? Enter the host’s ten-character room code below.</p><form onSubmit={event => { event.preventDefault(); if (!codeSchema.safeParse(code).success) {setError('Enter a valid ten-character room code.'); return;} void request(CHANNEL.join, { code, ...(pendingInvite ? { inviteToken: pendingInvite } : {}) }); }}><label className="room-code-input">Room Code<input value={code} autoComplete="off" spellCheck={false} maxLength={10} onChange={event => {setCode(event.target.value.toUpperCase().replace(/[^A-Z2-9]/g, '')); setPendingInvite(undefined);}} placeholder="XXXXXXXXXX"/></label><button className="outline-button" disabled={!online || busy || code.length !== 10}>Join Room</button><button type="button" className="outline-button" disabled={!online || busy || !codeSchema.safeParse(code).success} onClick={()=>request(CHANNEL.watch,{code,...(pendingInvite?{inviteToken:pendingInvite}:{})})}>Join as spectator</button></form></article></div>}</div> : <>
       <div className="room-code-bar"><div><span className="tiny-label">{room.visibility === 'public' ? 'PUBLIC' : 'PRIVATE'} ROOM · 2 PLAYER CAPACITY</span><strong className="room-code">{room.code}</strong><small>Expires {new Date(room.expiresAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} unless active; maximum two hours.</small></div><div className="room-code-actions"><button className="outline-button" onClick={() => copy(false)}><Copy size={14}/>Copy Room Code</button>{host && inviteToken && <button className="outline-button" onClick={() => copy(true)}><Copy size={14}/>Copy Invitation Link</button>}</div></div>
       <div className="player-slots">{([1,2] as const).map(slot => {
         const player = room.players.find(member => member.slot === slot);
@@ -178,13 +181,15 @@ export default function OnlineRooms({ games, guest, libraryReady, active, addDem
       })}</div>
       <div className={`compatibility-status ${room.compatibility === 'matched' ? 'matched' : ''}`} role="status">{compatibilityLabel}</div>
       {room.players.some(player => !player.connected) && <div className="room-error" role="alert">A player disconnected. Readiness has been cleared. Their slot is reserved for up to 60 seconds.</div>}
-      <div className="room-game-picker"><label>Your local game<select disabled={!online || busy || !!room.stream} value={me?.game?.hash || ''} onChange={event => {
+      {!spectator && <><div className="room-game-picker"><label>Your local game<select disabled={!online || busy || !!room.stream} value={me?.game?.hash || ''} onChange={event => {
         const game = games.find(game => game.id === event.target.value);
         const metadata: GameMetadata | null = game ? { name: cleanName(game.name,120), hash: game.id, profile: EMULATOR_PROFILE, multiplayerConfirmed: false } : null;
         void request(CHANNEL.game, {game:metadata});
-      }}><option value="">Select a game from your library</option>{games.map(game => <option key={game.id} value={game.id}>{game.name}</option>)}</select></label><p>Only the title, SHA-256 hash, emulator profile, and mode confirmation are shared. ROM files stay on your device.</p>{!games.length && <p>Import a Genesis ROM using Import games before selecting it here.</p>}{me?.game && <label className="mode-confirmation"><input type="checkbox" disabled={!online || busy || !!room.stream} checked={me.game.multiplayerConfirmed} onChange={event => request(CHANNEL.game, {game:{...me.game!,multiplayerConfirmed:event.target.checked}})}/>I’ve verified this game supports the intended two-player mode.</label>}</div>
+      }}><option value="">Select a game from your library</option>{games.map(game => <option key={game.id} value={game.id}>{game.name}</option>)}</select></label><p>Only the title, SHA-256 hash, emulator profile, and mode confirmation are shared. Optional ROM sharing uses a direct peer connection.</p>{!games.length && <p>Import a Genesis ROM using Import games before selecting it here.</p>}{me?.game && <label className="mode-confirmation"><input type="checkbox" disabled={!online || busy || !!room.stream} checked={me.game.multiplayerConfirmed} onChange={event => request(CHANNEL.game, {game:{...me.game!,multiplayerConfirmed:event.target.checked}})}/>I’ve verified this game supports the intended two-player mode.</label>}</div>
       <div className="room-footer-actions"><button className={me?.ready ? 'outline-button' : 'primary-button'} disabled={!online || busy || !!room.stream || (!me?.ready && !canReady)} onClick={() => request(CHANNEL.ready, {ready:!me?.ready})}>{me?.ready ? 'Not Ready' : 'Ready'}</button>{host && <button className="outline-button" disabled={!online || busy || !!room.stream} onClick={() => request(CHANNEL.swap,{})}><ArrowLeftRight size={14}/>Swap Player 1 / Player 2</button>}<button className="primary-button" disabled={!online || busy || !host || !room.streamAvailable || !!room.stream || room.players.length !== 2 || !room.players.every(player => player.ready && player.connected)} onClick={() => request(CHANNEL.streamStart,{})}>Start Game</button><button className="leave-room-button" disabled={busy} onClick={leave}>Leave Session</button></div>
-      {room.players.length === 2 && room.players.every(player => player.ready) && <p className="room-notice">Both players are ready. The host can select Start Game, then Start game inside the emulator.</p>}
+      </>}{spectator && <button className="leave-room-button" onClick={leave} disabled={busy}>Leave spectator seat</button>}
+      {lobbyClient && <RoomPeers room={room} myId={myId} client={lobbyClient} games={games} media={media} onLibraryChange={onLibraryChange}/>}
+      {!room.stream && !spectator && room.players.length === 2 && room.players.every(player => player.ready) && <p className="room-notice">Both players are ready. The host can select Start Game, then Start game inside the emulator.</p>}
     </>}
     {room && !room.streamAvailable && <p className="room-error">Restart the multiplayer service with host streaming enabled to play.</p>}
     {room?.visibility === 'public' && host && !me?.game && <p className="room-notice">Select a local game to make this public room discoverable again.</p>}

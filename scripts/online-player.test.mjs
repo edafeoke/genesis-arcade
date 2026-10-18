@@ -26,6 +26,7 @@ function fixture(hostSlot = 1) {
   return { inputs, sent, replies, data, epoch, manager, paused: () => paused, peer: () => peer,
     async start() { message({ type: 'init', config: { epoch, host: true, hostSlot, iceServers: [] } }); await handlers.get('genesis-started')(); data.onopen(); },
     packet: packet => data.onmessage({ data: JSON.stringify({ epoch, sequence: 1, buttons: 16, sent: now, ...packet }) }),
+    remap(keys) { window.GenesisControls = {keys}; },
     key(type, code) { handlers.get(type)({ code, target: {}, preventDefault() {}, stopImmediatePropagation() {} }); poll(); },
     blur() { handlers.get('blur')(); },
     device(value) { device.value = value; changeDevice(); },
@@ -85,4 +86,12 @@ test('explicit shared-keyboard mode owns both local ports and remote heartbeats 
   const swapped = fixture(2); await swapped.start(); swapped.device('shared');
   swapped.key('keydown', 'KeyK'); swapped.key('keydown', 'KeyG');
   assert.equal(swapped.inputs.get('0:0'), 1); assert.equal(swapped.inputs.get('1:0'), 1);
+});
+
+test('custom online keyboard mappings replace default keys and preserve controller isolation', async () => {
+  const f=fixture(); await f.start(); f.remap({KeyZ:0,Enter:3});
+  f.key('keydown','KeyS'); assert.equal(f.inputs.get('0:0'),0);
+  f.key('keydown','KeyZ'); assert.equal(f.inputs.get('0:0'),1);
+  f.packet({buttons:16}); assert.equal(f.inputs.get('1:4'),1);
+  f.blur(); assert.equal(f.inputs.get('0:0'),0);
 });

@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Expand, Gamepad2, RotateCcw, X } from 'lucide-react';
+import SaveManager from './save-manager';
+import type { ArcadeSave } from '@/lib/saves';
 import type { Game } from '@/lib/library';
 
 const CHANNEL = 'genesis-player-v1';
@@ -64,6 +66,20 @@ export default function GamePlayer({ game, onClose }: { game: Game; onClose: () 
     return () => { clearTimeout(timer); window.removeEventListener('message', receive); };
   }, [game, attempt]);
 
+  async function stateRequest(type: 'state-save' | 'state-load', save?: ArcadeSave): Promise<Blob> {
+    const bytes = save ? new Uint8Array(await save.data.arrayBuffer()) : undefined;
+    return new Promise((resolve,reject) => {
+      const request = crypto.randomUUID();
+      const cleanup = () => {clearTimeout(timer);window.removeEventListener('message',receive);};
+      const receive = (event: MessageEvent) => {
+        if(event.source!==frame.current?.contentWindow || event.origin!==location.origin || event.data?.channel!==CHANNEL || event.data.type!=='state-result' || event.data.request!==request)return;
+        cleanup(); if(event.data.error)reject(new Error(event.data.error));else resolve(event.data.data || new Blob());
+      };
+      const timer = setTimeout(()=>{cleanup();reject(new Error('The player did not respond. Start the game and retry.'));},5000);
+      window.addEventListener('message',receive);
+      frame.current?.contentWindow?.postMessage({channel:CHANNEL,type,request,id:game.id,data:bytes},location.origin);
+    });
+  }
   function retry() { setStatus('loading'); setError(''); setAttempt(value => value + 1); }
   async function fullscreen() {
     try { await panel.current?.requestFullscreen(); }
@@ -74,7 +90,7 @@ export default function GamePlayer({ game, onClose }: { game: Game; onClose: () 
     <section ref={panel} className="player-panel" role="dialog" aria-modal="true" aria-labelledby="player-title" onKeyDown={event => {
       if (event.key === 'Escape' && !document.fullscreenElement) onClose();
       if (event.key === 'Tab') {
-        const elements = panel.current?.querySelectorAll<HTMLElement>('button:not(:disabled), iframe');
+        const elements = panel.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled):not([type=hidden]), select:not(:disabled), iframe');
         const first = elements?.[0];
         const last = elements?.[elements.length - 1];
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
@@ -85,6 +101,7 @@ export default function GamePlayer({ game, onClose }: { game: Game; onClose: () 
       <div className="player-status" role="status"><span className={status === 'error' ? 'error-dot' : 'green-dot'}/>{status === 'loading' ? 'Loading local emulator…' : status === 'ready' ? 'Ready — select Start game in the player' : status === 'playing' ? 'Playing locally' : 'Unable to start'}</div>
       {error && <div className="notice" role="alert">{error}{status === 'error' && <button className="outline-button" onClick={retry}>Retry</button>}</div>}
       {status !== 'error' && <iframe key={attempt} ref={frame} className="emulator-frame" src="/player/index.html" title={`${game.name} — Genesis player`} onLoad={() => frame.current?.contentWindow?.postMessage({ channel: CHANNEL, type: 'ping' }, location.origin)} allow="autoplay; fullscreen; gamepad" onError={() => {setStatus('error'); setError('The player page is unavailable. Reconnect and try again.');}}/>}
+      {status === 'playing' && <SaveManager game={game} capture={()=>stateRequest('state-save')} restore={async save=>{await stateRequest('state-load',save);}}/>}
       <div className="player-help"><Gamepad2 size={18}/><p>Click the game to focus controls. Use the player’s controller settings to view or remap keyboard and gamepad buttons. Save/load state controls are in its toolbar.</p></div>
       <p className="player-save-note">Save before closing. Emulator save data stays in this browser; export important saves using the player settings.</p>
     </section>

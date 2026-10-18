@@ -1,7 +1,7 @@
 import { randomBytes, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
-import { LOBBY_PAGE_SIZE, type LobbyPage, type PublicLobby, compatibility, type GameMetadata, type RoomPlayer, type RoomSnapshot, type StreamSession, type StreamSignal } from '../lib/multiplayer/protocol';
+import { LOBBY_PAGE_SIZE, type LobbyPage, type PublicLobby, compatibility, type GameMetadata, type RoomPlayer, type RoomSnapshot, type StreamSession, type StreamSignal, type RoomPeerSignal } from '../lib/multiplayer/protocol';
 
-type Member = { id: string; token: string; name: string; socketId: string | null; roomCode: string | null; disconnectedAt: number | null; slot: 1 | 2; ready: boolean; game: GameMetadata | null };
+type Member = { id: string; token: string; name: string; socketId: string | null; roomCode: string | null; disconnectedAt: number | null; slot: 0 | 1 | 2; ready: boolean; game: GameMetadata | null };
 type Room = { visibility: 'private' | 'public'; publicId: string | null; code: string; inviteToken: string; hostId: string; members: Member[]; createdAt: number; updatedAt: number; stream: StreamSession | null };
 export class RoomError extends Error {
   constructor(public code: string, message: string) { super(message); }
@@ -39,7 +39,7 @@ export class RoomStore {
     this.sockets.set(socketId, member);
     if (member.roomCode) {
       const room = this.rooms.get(member.roomCode)!;
-      this.resetReady(room); this.publish(room);
+      if (member.slot !== 0) this.resetReady(room); this.publish(room);
     }
     return { previousSocketId, hello: { id: member.id, token: member.token, restored, room: member.roomCode ? this.snapshot(this.rooms.get(member.roomCode)!) : null } };
   }
@@ -56,8 +56,8 @@ export class RoomStore {
     return { member, room };
   }
   private snapshot(room: Room): RoomSnapshot {
-    const players: RoomPlayer[] = room.members.map(({ id, name, slot, socketId, ready, game }) => ({ id, name, slot, connected: !!socketId, ready, game: game ? { ...game } : null })).sort((a, b) => a.slot - b.slot);
-    return { code: room.code, visibility: room.visibility, hostId: room.hostId, expiresAt: Math.min(room.updatedAt + this.idleMs, room.createdAt + this.lifetimeMs), players, compatibility: compatibility(players), syncAvailable: false, streamAvailable: !!this.options.streaming, stream: room.stream ? { ...room.stream } : null };
+    const players: RoomPlayer[] = room.members.filter(member => member.slot !== 0).map(({ id, name, slot, socketId, ready, game }) => ({ id, name, slot: slot as 1 | 2, connected: !!socketId, ready, game: game ? { ...game } : null })).sort((a, b) => a.slot - b.slot);
+    return { code: room.code, visibility: room.visibility, hostId: room.hostId, expiresAt: Math.min(room.updatedAt + this.idleMs, room.createdAt + this.lifetimeMs), players, spectators: room.members.filter(member => member.slot === 0).map(({id,name,socketId}) => ({id,name,connected:!!socketId})), compatibility: compatibility(players), syncAvailable: false, streamAvailable: !!this.options.streaming, stream: room.stream ? { ...room.stream } : null };
   }
   private publish(room: Room) { this.onUpdate(this.snapshot(room), room.members.flatMap(member => member.socketId ? [member.socketId] : [])); }
   private resetReady(room: Room) { room.stream = null; for (const member of room.members) member.ready = false; }
@@ -84,10 +84,31 @@ export class RoomStore {
     const room = this.rooms.get(code);
     if (!room || (inviteToken !== undefined && !this.equalToken(inviteToken, room.inviteToken))) throw new RoomError('ROOM_UNAVAILABLE', 'Room or invitation is invalid or expired.');
     if (!room.members.some(player => player.id === room.hostId && player.socketId)) throw new RoomError('HOST_AWAY', 'The host is reconnecting. Try again shortly.');
-    if (room.members.length >= 2) throw new RoomError('ROOM_FULL', 'This room is full, including reconnecting players.');
-    member.roomCode = code; member.slot = room.members[0].slot === 1 ? 2 : 1; member.game = null; member.ready = false;
+    if (room.members.filter(player => player.slot !== 0).length >= 2) throw new RoomError('ROOM_FULL', 'This room is full, including reconnecting players.');
+    member.roomCode = code; member.slot = room.members.find(player => player.slot !== 0)!.slot === 1 ? 2 : 1; member.game = null; member.ready = false;
     room.members.push(member); this.resetReady(room); this.touch(room); this.publish(room);
     return this.snapshot(room);
+  }
+  watch(socketId: string, code: string, inviteToken?: string) {
+    this.sweep();
+    const member = this.member(socketId);
+    if (member.roomCode) throw new RoomError('ALREADY_IN_ROOM', 'Leave your current room first.');
+    const room = this.rooms.get(code);
+    if (!room || (inviteToken !== undefined && !this.equalToken(inviteToken, room.inviteToken))) throw new RoomError('ROOM_UNAVAILABLE', 'Room or invitation is invalid or expired.');
+    if (!room.members.find(player => player.id === room.hostId)?.socketId) throw new RoomError('HOST_AWAY', 'The host is reconnecting.');
+    if (room.members.filter(player => player.slot === 0).length >= 4) throw new RoomError('SPECTATORS_FULL', 'All four spectator seats are occupied.');
+    member.roomCode = code; member.slot = 0; member.game = null; member.ready = false;
+    room.members.push(member); this.touch(room); this.publish(room);
+    return this.snapshot(room);
+  }
+  relayPeer(socketId: string, data: Omit<RoomPeerSignal, 'from'>) {
+    const { member, room } = this.membership(socketId);
+    if (data.code !== room.code) throw new RoomError('MEMBERSHIP', 'Wrong room.');
+    const peer = room.members.find(player => player.id === data.target && player.socketId);
+    if (!peer?.socketId || peer.id === member.id || (member.id !== room.hostId && peer.id !== room.hostId)) throw new RoomError('PEER_ROLE', 'Peer connections must include this room’s host.');
+    const host = member.id === room.hostId;
+    if ((data.signal.type === 'offer' && !host) || (data.signal.type === 'answer' && host)) throw new RoomError('SIGNAL_ROLE', 'Invalid signaling role.');
+    return { socketId: peer.socketId, message: { ...data, from: member.id } };
   }
   listPublic(socketId: string, query = '', offset = 0): LobbyPage {
     this.sweep(); this.member(socketId);
@@ -98,21 +119,21 @@ export class RoomStore {
     const lobbies: PublicLobby[] = matches.slice(offset, offset + LOBBY_PAGE_SIZE).map(room => {
       const host = room.members.find(member => member.id === room.hostId)!;
       return {
-        id: room.publicId!, gameName: host.game!.name, players: room.members.length,
-        readyPlayers: room.members.filter(member => member.ready).length, capacity: 2,
-        status: !host.socketId ? 'host-away' : room.members.length === 2 ? 'full' : 'waiting',
+        id: room.publicId!, gameName: host.game!.name, players: room.members.filter(member => member.slot !== 0).length,
+        readyPlayers: room.members.filter(member => member.ready).length, capacity: 2, spectators: room.members.filter(member => member.slot === 0).length, spectatorCapacity: 4,
+        status: !host.socketId ? 'host-away' : room.members.filter(member => member.slot !== 0).length === 2 ? 'full' : 'waiting',
         modeConfirmed: host.game!.multiplayerConfirmed,
         expiresAt: Math.min(room.updatedAt + this.idleMs, room.createdAt + this.lifetimeMs),
       };
     });
     return { lobbies, total: matches.length, offset };
   }
-  joinPublic(socketId: string, id: string) {
+  joinPublic(socketId: string, id: string, watch = false) {
     this.sweep(); this.member(socketId);
     const room = [...this.rooms.values()].find(room => room.visibility === 'public' && room.publicId === id);
     if (!room || !room.members.find(member => member.id === room.hostId)?.game) throw new RoomError('ROOM_UNAVAILABLE', 'This public room is no longer available. Refresh the lobby.');
     // The existing atomic join checks membership, host presence and reserved capacity.
-    return this.join(socketId, room.code);
+    return watch ? this.watch(socketId, room.code) : this.join(socketId, room.code);
   }
   private equalToken(a: string, b: string) {
     const left = Buffer.from(a), right = Buffer.from(b);
@@ -121,26 +142,30 @@ export class RoomStore {
   selectGame(socketId: string, game: GameMetadata | null) {
     const { member, room } = this.membership(socketId);
     if (room.stream) throw new RoomError('SESSION_ACTIVE', 'End the game before changing the waiting room.');
+    if (member.slot === 0) throw new RoomError('SPECTATOR_ONLY', 'Spectators cannot select games.');
     member.game = game ? { ...game } : null; this.resetReady(room); this.touch(room); this.publish(room);
     return this.snapshot(room);
   }
   ready(socketId: string, ready: boolean) {
     const { member, room } = this.membership(socketId);
     if (room.stream) throw new RoomError('SESSION_ACTIVE', 'End the game before changing the waiting room.');
-    if (ready && (compatibility(room.members) !== 'matched' || room.members.some(player => !player.socketId) || !member.game?.multiplayerConfirmed)) throw new RoomError('NOT_COMPATIBLE', 'Both players must be connected with matching ROMs and emulator profiles. Confirm the game has a two-player mode.');
+    if (member.slot === 0) throw new RoomError('SPECTATOR_ONLY', 'Spectators cannot ready up.');
+    const players = room.members.filter(player => player.slot !== 0);
+    if (ready && (compatibility(players) !== 'matched' || players.some(player => !player.socketId) || !member.game?.multiplayerConfirmed)) throw new RoomError('NOT_COMPATIBLE', 'Both players must be connected with matching ROMs and emulator profiles. Confirm the game has a two-player mode.');
     member.ready = ready; this.touch(room); this.publish(room); return this.snapshot(room);
   }
   swap(socketId: string) {
     const { member, room } = this.membership(socketId);
     if (room.stream) throw new RoomError('SESSION_ACTIVE', 'End the game before changing the waiting room.');
     if (member.id !== room.hostId) throw new RoomError('HOST_ONLY', 'Only the host may assign controller positions.');
-    for (const player of room.members) player.slot = player.slot === 1 ? 2 : 1;
+    for (const player of room.members.filter(member => member.slot !== 0)) player.slot = player.slot === 1 ? 2 : 1;
     this.resetReady(room); this.touch(room); this.publish(room); return this.snapshot(room);
   }
   start(socketId: string): never {
     const { member, room } = this.membership(socketId);
     if (member.id !== room.hostId) throw new RoomError('HOST_ONLY', 'Only the host may start the session.');
-    if (room.members.length !== 2 || room.members.some(player => !player.socketId || !player.ready || !player.game?.multiplayerConfirmed) || compatibility(room.members) !== 'matched') throw new RoomError('NOT_READY', 'Both players must have compatible games and be ready.');
+    const players = room.members.filter(player => player.slot !== 0);
+    if (players.length !== 2 || players.some(player => !player.socketId || !player.ready || !player.game?.multiplayerConfirmed) || compatibility(players) !== 'matched') throw new RoomError('NOT_READY', 'Both players must have compatible games and be ready.');
     throw new RoomError('SYNC_UNAVAILABLE', 'Synchronized gameplay is not implemented. This room is a networking waiting-room prototype.');
   }
   startStream(socketId: string) {
@@ -148,22 +173,25 @@ export class RoomStore {
     if (!this.options.streaming) throw new RoomError('STREAM_UNAVAILABLE', 'Host streaming is unavailable on this service.');
     if (member.id !== room.hostId) throw new RoomError('HOST_ONLY', 'Only the host may start the game.');
     if (room.stream) throw new RoomError('SESSION_ACTIVE', 'A game is already running.');
-    if (room.members.length !== 2 || room.members.some(player => !player.socketId || !player.ready || !player.game?.multiplayerConfirmed) || compatibility(room.members) !== 'matched') throw new RoomError('NOT_READY', 'Both players must select matching games and be ready.');
-    room.stream = { epoch: randomUUID(), hostId: member.id, hostSlot: member.slot, gameHash: member.game!.hash, startedAt: this.now() };
+    const players = room.members.filter(player => player.slot !== 0);
+    if (players.length !== 2 || players.some(player => !player.socketId || !player.ready || !player.game?.multiplayerConfirmed) || compatibility(players) !== 'matched') throw new RoomError('NOT_READY', 'Both players must select matching games and be ready.');
+    room.stream = { epoch: randomUUID(), hostId: member.id, hostSlot: member.slot as 1 | 2, gameHash: member.game!.hash, startedAt: this.now() };
     this.touch(room); this.publish(room);
     return { room: this.snapshot(room) };
   }
   stopStream(socketId: string, epoch: string) {
-    const { room } = this.membership(socketId);
+    const { member, room } = this.membership(socketId);
+    if (member.slot === 0) throw new RoomError('SPECTATOR_ONLY', 'Spectators cannot stop games.');
     if (!room.stream || room.stream.epoch !== epoch) throw new RoomError('STALE_SESSION', 'This game has ended.');
     this.resetReady(room); this.touch(room); this.publish(room);
   }
   relayStream(socketId: string, data: StreamSignal) {
     const { member, room } = this.membership(socketId);
     if (!room.stream || room.stream.epoch !== data.epoch) throw new RoomError('STALE_SESSION', 'This game has ended.');
+    if (member.slot === 0) throw new RoomError('SPECTATOR_ONLY', 'Spectators cannot control games.');
     const host = member.id === room.hostId;
     if ((data.signal.type === 'offer' && !host) || (data.signal.type === 'answer' && host)) throw new RoomError('SIGNAL_ROLE', 'Invalid signaling role.');
-    const peer = room.members.find(player => player.id !== member.id && player.socketId);
+    const peer = room.members.find(player => player.id !== member.id && player.slot !== 0 && player.socketId);
     if (!peer?.socketId) throw new RoomError('PEER_AWAY', 'Your opponent disconnected.');
     this.touch(room);
     return peer.socketId;
@@ -185,13 +213,13 @@ export class RoomStore {
     this.sockets.delete(socketId); member.socketId = null; member.ready = false; member.disconnectedAt = this.now();
     if (!member.roomCode) { this.sessions.delete(member.token); return; }
     const room = this.rooms.get(member.roomCode);
-    if (room) { this.resetReady(room); this.publish(room); }
+    if (room) { if (member.slot !== 0) this.resetReady(room); this.publish(room); }
   }
   private removeGuest(room: Room, member: Member) {
     room.members = room.members.filter(player => player.id !== member.id);
     member.roomCode = null; member.game = null; member.ready = false;
     if (!member.socketId) this.sessions.delete(member.token);
-    this.resetReady(room);
+    if (member.slot !== 0) this.resetReady(room);
   }
   private close(room: Room, reason: string) {
     const sockets = room.members.flatMap(member => member.socketId ? [member.socketId] : []);

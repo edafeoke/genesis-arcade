@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-18",
+  "scope": "Local Chromium browser checks; no deployment or physical-gamepad certification",
+  "frontend": ["http://127.0.0.1:3200", "http://localhost:3200"],
+  "roomService": "http://127.0.0.1:4101",
+  "romTransfer": {
+    "game": "Quickdraw Duel",
+    "sha256": "4a08dcf8c1633e8b97158471e547acdf9d248f9d725c62464a5f43d9554e8374",
+    "recipientLibraryInitiallyEmpty": true,
+    "hostOfferedAndRecipientAccepted": true,
+    "recipientReportedVerifiedImport": true,
+    "hostReceivedImportAcknowledgement": true,
+    "screenshot": "rom-transfer-proof.png"
+  },
+  "spectator": {
+    "thirdTabReceivedVideo": true,
+    "audioEnabledThroughUI": true,
+    "leaveAndRejoinPreservedPlayerConnections": true,
+    "screenshot": "spectator-proof.png"
+  },
+  "controller": {
+    "player2BRemappedTo": "KeyZ",
+    "persistenceAndReset": "Covered by controller-remapping.test.mjs",
+    "physicalGamepad": "Not tested"
+  },
+  "save": {
+    "createdSnapshotBytesApprox": 1036000,
+    "restoreAcknowledgedThroughPlayerBridge": true,
+    "postRestoreGamePictureVisible": true,
+    "screenshot": "save-management-proof.png",
+    "saveFormatAndBridgeValidation": "Covered by saves.test.ts and player-saves.test.mjs"
+  }
+}

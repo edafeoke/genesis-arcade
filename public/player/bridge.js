@@ -2,6 +2,7 @@
 (() => {
   const channel = 'genesis-player-v1';
   let initialized = false;
+  let gameId;
   let gameUrl;
   let failed = false;
   const send = (type, message) => parent.postMessage({ channel, type, message }, location.origin);
@@ -19,8 +20,25 @@
     if (error) fail(error.textContent || 'The Genesis core could not start.');
   }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] });
   window.addEventListener('message', (event) => {
-    if (event.source !== parent || event.origin !== location.origin || event.data?.channel !== channel || !['load', 'ping'].includes(event.data.type)) return;
+    if (event.source !== parent || event.origin !== location.origin || event.data?.channel !== channel || !['load', 'ping', 'state-save', 'state-load'].includes(event.data.type)) return;
     if (event.data.type === 'ping') { send('bridge-ready'); return; }
+    if (event.data.type.startsWith('state-')) {
+      const request = event.data.request;
+      try {
+        if (!window.EJS_emulator?.gameManager || event.data.id !== gameId) throw new Error('Start this game before using saves.');
+        const manager = window.EJS_emulator.gameManager;
+        if (event.data.type === 'state-save') {
+          const bytes = manager.getState();
+          parent.postMessage({channel, type:'state-result', request, data:new Blob([bytes])}, location.origin);
+        } else {
+          const bytes = event.data.data;
+          if (!(bytes instanceof Uint8Array) || !bytes.length || bytes.length > 16*1024*1024) throw new Error('Invalid save state.');
+          manager.loadState(bytes);
+          parent.postMessage({channel,type:'state-result',request},location.origin);
+        }
+      } catch(error) {parent.postMessage({channel,type:'state-result',request,error:error.message},location.origin);}
+      return;
+    }
     if (initialized) return;
     const { rom, id } = event.data;
     if (!(rom instanceof Blob) || !rom.size || rom.size > 32 * 1024 * 1024 || !/^[a-f0-9]{64}$/.test(id)) {
@@ -28,6 +46,7 @@
       return;
     }
     initialized = true;
+    gameId = id;
     gameUrl = URL.createObjectURL(rom);
     // The instrumented core is opt-in and never used by the ordinary player.
     if (new URLSearchParams(location.search).get('adapter') === '1') {

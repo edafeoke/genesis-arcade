@@ -14,6 +14,7 @@
     "server:dev": "tsx watch server/index.ts",
     "server:build": "tsc -p server/tsconfig.json",
     "server:start": "node .multiplayer-build/server/index.js",
+    "check:multiplayer": "node scripts/check-multiplayer.mjs",
     "test:multiplayer": "node --import tsx --test server/*.test.ts",
     "test:sync": "node --import tsx --test server/adapter.test.ts server/fixture-backend.test.ts server/lockstep.test.ts"
   },

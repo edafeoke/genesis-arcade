@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
-import { CHANNEL, authSchema, schemas, type Reply, type GameMetadata, type StreamSignal } from '../lib/multiplayer/protocol';
+import { CHANNEL, authSchema, schemas, type Reply, type GameMetadata, type StreamSignal, type RoomPeerSignal } from '../lib/multiplayer/protocol';
 import { RoomError, RoomStore } from './rooms';
 
 export class RateLimiter {
@@ -62,10 +62,10 @@ export function createMultiplayerServer({ origins, store = new RoomStore() }: { 
     socket.use((packet, next) => {
       const [event, payload, ack] = packet;
       const reply = typeof ack === 'function' ? ack as (result: Reply) => void : undefined;
-      if (event !== CHANNEL.signal && Buffer.byteLength(JSON.stringify(payload) || '') > 4096) { socket.disconnect(true); return; }
-      if (event === CHANNEL.signal) {
+      if (event !== CHANNEL.signal && event !== CHANNEL.peer && Buffer.byteLength(JSON.stringify(payload) || '') > 4096) { socket.disconnect(true); return; }
+      if (event === CHANNEL.signal || event === CHANNEL.peer) {
         if (!limiter.allow(`signal:${socket.id}`, 100, 10_000) || !limiter.allow(`signal-ip:${ip}`, 400, 10_000)) { socket.disconnect(true); return; }
-        const signal = schemas[CHANNEL.signal].safeParse(payload);
+        const signal = schemas[event].safeParse(payload);
         if (!signal.success || !reply) { reply?.({ ok: false, code: 'INVALID_MESSAGE', message: 'Invalid session signaling.' }); return; }
         packet[1] = signal.data; next(); return;
       }
@@ -103,6 +103,18 @@ export function createMultiplayerServer({ origins, store = new RoomStore() }: { 
     handle(CHANNEL.joinPublic, data => {
       if (!limiter.allow(`join:${ip}`, 15, 60_000)) throw new RoomError('RATE_LIMIT', 'Too many join attempts. Try again in a minute.');
       return { room: store.joinPublic(socket.id, data.id as string) };
+    });
+    handle(CHANNEL.watch, data => {
+      if (!limiter.allow(`join:${ip}`, 15, 60_000)) throw new RoomError('RATE_LIMIT', 'Too many join attempts.');
+      return { room: store.watch(socket.id, data.code as string, data.inviteToken as string | undefined) };
+    });
+    handle(CHANNEL.watchPublic, data => {
+      if (!limiter.allow(`join:${ip}`, 15, 60_000)) throw new RoomError('RATE_LIMIT', 'Too many join attempts.');
+      return { room: store.joinPublic(socket.id, data.id as string, true) };
+    });
+    handle(CHANNEL.peer, data => {
+      const relay = store.relayPeer(socket.id, data as Omit<RoomPeerSignal, 'from'>);
+      io.to(relay.socketId).emit(CHANNEL.peer, relay.message);
     });
     handle(CHANNEL.game, data => ({ room: store.selectGame(socket.id, data.game as GameMetadata | null) }));
     handle(CHANNEL.ready, data => ({ room: store.ready(socket.id, data.ready as boolean) }));

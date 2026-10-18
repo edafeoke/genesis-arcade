@@ -19,6 +19,8 @@ Open the URL printed by Next.js. Use HTTPS or localhost so Web Crypto is availab
 - Local `.md`, `.gen`, `.bin` import (uncompressed, up to 32 MB).
 - IndexedDB ROM/metadata persistence and content-based SHA-256 deduplication.
 - Search, favorite, export and remove games.
+- Named local save snapshots with import/export, load and deletion.
+- Persistent online controller remapping, opt-in direct ROM sharing and four spectator seats.
 - Local guest identity and editable display name.
 - Self-hosted EmulatorJS 4.2.3 / Genesis Plus GX 2.0.2 player with keyboard/gamepad mapping, fullscreen, restart and error recovery.
 - Emulator toolbar save/load states using browser storage, plus save import/export.
@@ -30,7 +32,7 @@ ROMs are not uploaded. Browser data deletion removes the collection. Export file
 
 ## Not yet implemented
 
-Deterministic two-core synchronization, rollback and app-level save management. Casual host-streamed multiplayer is playable; deterministic netplay remains unavailable. Physical gamepad and commercial-game compatibility require further device testing.
+Deterministic two-core synchronization and rollback. Casual host-streamed multiplayer is playable; deterministic netplay remains unavailable. Physical gamepad and commercial-game compatibility require further device testing.
 
 See [product requirements](docs/PRODUCT_REQUIREMENTS.md) and [emulator research gates](docs/EMULATOR_RESEARCH.md).
 
@@ -74,6 +76,10 @@ Run `pnpm server:dev` alongside `pnpm dev`. Open **Play online → Connect to mu
 
 See [multiplayer setup, protocol, limits and production notes](docs/MULTIPLAYER.md). The room service is optional for local single-player.
 
+For public hosting, follow [Vercel + Render deployment](docs/DEPLOYMENT.md).
+The repository includes a Render Blueprint and `pnpm check:multiplayer` to verify
+the deployed service's health and WebSocket connection.
+
 In Play online, select **Public Lobbies** to browse or create a public room after connecting. Public creation requires a locally stored game. Full rooms and reconnecting hosts cannot be joined. Matching ROM contents and two-player-mode confirmation are still checked inside the waiting room; host streaming starts after both players are ready; deterministic netplay remains unavailable.
 
 ## Synchronization capability lab
@@ -106,3 +112,5 @@ The [versioned adapter and delay-lockstep modules](docs/SYNCHRONIZATION_ADAPTER.
 Run `pnpm test:sync` for 17 focused checks, including two model peers reaching identical full snapshots across a 300-sample trace with jittered/reversed delivery and duplicates. These are model/transport simulations. A general EmulatorJS backend and live two-browser wiring remain unimplemented; deterministic room:start stays disabled; the UI uses stream:start for casual host streaming.
 
 The instrumented lab now also runs the versioned adapter against the exact CC0 frame diagnostic. It checks measured video frames and byte-exact queued restoration plus the timing sidecar; per-step snapshot checksums include auxiliary timing. Run `pnpm lab:build` before using `?adapter=1`. This remains a local replay test, with no live gameplay transport.
+
+See [save management, controls, ROM sharing and spectator instructions](docs/SAVES_SHARING_SPECTATORS.md).

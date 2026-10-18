@@ -64,3 +64,7 @@ The frontend defaults to port 4001 on localhost; production non-localhost defaul
 ### Recorded local result
 
 `host-streaming-browser-proof.json` records the local check. `host-streaming-proof.png` and `host-streaming-guest-proof.png` show the connected game. Both shared-keyboard players completed wins, Player 2 started a rematch, and the guest received video plus an audio track (playback ready state 4, decoded video 562×442). All 64 automated checks pass; lint, TypeScript, server compilation and the webpack production build pass. Short presses are retained until the host observes a core frame advance, so a press/release between two ticks is sampled once; blur, disconnect and teardown bypass that latch to release controls immediately.
+
+## Save management, remapping, direct sharing and spectators
+
+See [feature instructions](SAVES_SHARING_SPECTATORS.md) for named local save snapshots, persistent online controls, opt-in host-to-player ROM transfers and four read-only spectator seats. These use separate peer connections so spectators cannot send controller packets or consume Player 2’s seat.

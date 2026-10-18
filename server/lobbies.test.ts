@@ -17,7 +17,7 @@ function setup() {
 test('public discovery excludes private rooms and every credential/identity/hash field',()=>{
   const {store,created,privateRoom}=setup();const result=store.listPublic('visitor');
   assert.equal(result.total,1);const lobby=result.lobbies[0];
-  assert.deepEqual(Object.keys(lobby).sort(),['id','gameName','players','readyPlayers','capacity','status','modeConfirmed','expiresAt'].sort());
+  assert.deepEqual(Object.keys(lobby).sort(),['id','gameName','players','readyPlayers','capacity','spectators','spectatorCapacity','status','modeConfirmed','expiresAt'].sort());
   assert.equal(lobby.status,'waiting');assert.equal(lobby.players,1);
   const serialized=JSON.stringify(result);
   for(const value of [created.room.code,created.inviteToken,privateRoom.room.code,privateRoom.inviteToken,'Private identity','Public host','a'.repeat(64),EMULATOR_PROFILE]) assert.ok(!serialized.includes(value));

@@ -1,4 +1,4 @@
-/* Host-authoritative casual multiplayer. No ROM or save-state bytes cross the network. */
+/* Host-authoritative casual multiplayer. Game media and controller input use this connection; optional ROM sharing uses a separate room peer connection. */
 (() => {
   const CHANNEL = 'genesis-stream-v1';
   const audioOutputs = new Map();
@@ -46,7 +46,7 @@
     clearInterval(inputTimer); clearInterval(watchdog); clearTimeout(connectTimeout);
     if (manager) { apply(1, 0, true); apply(2, 0, true); window.EJS_emulator.pause(); }
     data?.close(); pc?.close(); media?.getTracks().forEach(track => track.stop());
-    video.srcObject = null;
+    video.srcObject = null; window.genesisSpectatorMedia = null;
     show(message);
     if (notify) send('ended', { message });
   }
@@ -71,7 +71,8 @@
       if (type === 'keydown') secondKeys |= bit; else secondKeys &= ~bit;
       poll(); return;
     }
-    const button = (sharedKeyboard() ? firstSharedMap : keyMap)[event.code];
+    if (window.GenesisControls?.editing) return;
+    const button = (sharedKeyboard() ? firstSharedMap : (window.GenesisControls?.keys || keyMap))[event.code];
     if (button === undefined || !config || closed || (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement)) return;
     event.preventDefault(); event.stopImmediatePropagation();
     if (type === 'keydown') keys |= 1 << button; else keys &= ~(1 << button);
@@ -79,6 +80,7 @@
   }, true);
   const release = () => { keys = secondKeys = touch = localMask = 0; secondMask = -1; if (config?.host) { if (sharedKeyboard()) { apply(1, 0, true); apply(2, 0, true); } else apply(config.hostSlot, 0, true); } else transmit(0); };
   device.addEventListener('change', () => { release(); apply(1, 0, true); apply(2, 0, true); lastMask = -1; document.querySelector('#keyboard-help').textContent = sharedKeyboard() ? 'P1: Arrows + J/K/L, Enter Start. P2: WASD + F/G/H, Space Start. Keep this host window focused.' : 'Arrows move. A/S/D = A/B/C. Enter = Start. Click the game to focus.'; });
+  window.addEventListener('genesis-controls-changed', release);
   window.addEventListener('blur', release);
   document.addEventListener('visibilitychange', () => { if (document.hidden) release(); });
   window.addEventListener('pagehide', () => close('Session closed.', false));
@@ -97,8 +99,8 @@
     let mask = keys | touch;
     if (device.value.startsWith('gamepad-') && !document.hidden) {
       const pad = (navigator.getGamepads?.() || [])[Number(device.value.slice(8))];
-      if (pad?.connected && pad.mapping === 'standard') {
-        for (const [index, button] of [[0,0],[1,8],[2,1],[3,9],[4,10],[5,11],[8,2],[9,3],[12,4],[13,5],[14,6],[15,7]]) if (pad.buttons[index]?.pressed) mask |= 1 << button;
+      if (!window.GenesisControls?.editing && pad?.connected && pad.mapping === 'standard') {
+        for (const [index, button] of Object.entries(window.GenesisControls?.pad || {0:0,1:8,2:1,3:9,4:10,5:11,8:2,9:3,12:4,13:5,14:6,15:7})) if (pad.buttons[Number(index)]?.pressed) mask |= 1 << button;
         if (pad.axes[0] < -0.5) mask |= 1 << 6; if (pad.axes[0] > 0.5) mask |= 1 << 7;
         if (pad.axes[1] < -0.5) mask |= 1 << 4; if (pad.axes[1] > 0.5) mask |= 1 << 5;
       }
@@ -204,6 +206,8 @@
       media = canvas.captureStream(60);
       for (const output of audioOutputs.values()) for (const track of output.stream.getAudioTracks()) media.addTrack(track);
       for (const track of media.getTracks()) pc.addTrack(track, media);
+      window.genesisSpectatorMedia = media;
+      send('media-ready');
       channelReady(pc.createDataChannel('genesis-controller-v1', { ordered: true }));
       await pc.setLocalDescription(await pc.createOffer());
       send('signal', { signal: { type: 'offer', sdp: pc.localDescription.sdp } });
