@@ -78,3 +78,24 @@ These checks do not certify physical gamepads or every commercial ROM.
 See the [browser check record](features-browser-proof.json),
 [spectator picture](spectator-proof.png), [verified transfer](rom-transfer-proof.png)
 and [loaded snapshot](save-management-proof.png).
+
+### Spectator media timing fix
+
+Spectator peers reserve send-only video/audio transceivers in their first offer.
+When the host emulator starts or restarts, its tracks replace those sender tracks
+without requiring another offer. ICE candidates arriving before their offer are
+buffered with bounded memory. Playback is reported as live only after the video
+loads/plays, and audio is enabled only after an audio track is active. A spectator
+can retry its peer connection without stopping the player session; a missing
+picture produces a timeout explanation rather than an indefinitely blank player.
+
+Regression checks cover reserved media slots, late track attachment, replacement
+and removal on restart, serialized updates, and early ICE order/bounds. Local
+browser checks verified a viewer connected before emulator start, leaving/rejoining
+an active game, and the retry button while Player 2 stayed connected. This fix
+changes only frontend code: deploy Vercel, then have the host and spectators reload
+and start a fresh game so both sides use the new connection code. Separate networks
+may still require the configured TURN service.
+
+[Recovered spectator playback](spectator-recovery-proof.png) records the local
+retry check with picture visible and audio enabled.
